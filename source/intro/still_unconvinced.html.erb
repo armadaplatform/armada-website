@@ -1,0 +1,54 @@
+<link type="text/css" rel="stylesheet" href="/assets/css/article.css" />
+<div class="content">
+<h3>Still unconvinced? :-)</h3>
+
+        <ul>
+            <h4>Why microservices?</h4>
+            <ul class="text">
+                <li>In service oriented architecture, microservices communicate with each other using
+                well-defined APIs and the internals are hidden from the user.</li>
+                <li>Each microservice can be developed independently using different technologies.</li>
+                <li>It is easier to introduce new developers in the team because of smaller code scope
+                required to understand the application.</li>
+                <li>Read more:<br/>
+                <a href="http://martinfowler.com/articles/microservices.html">http://martinfowler.com/articles/microservices.html</a>
+                <br/>
+                <a href="http://en.wikipedia.org/wiki/Service-oriented_architecture">http://en.wikipedia.org/wiki/Service-oriented_architecture</a></li>
+            </ul>
+
+            <h4>Why Docker?</h4>
+            <ul class="text">
+                <li>Applications containerized with Docker are independent from infrastructure.</li>
+                <li>The list of dependencies and requirements is stored in a file together
+                with the code (e.g. in version control system).</li>
+                <li>Preparation of the environment (i.e. installation of required packages, libraries)
+                is completely automated. If dockerized applications work locally they will work in production.
+                No more excuses: "It worked fine on my computer.".
+                <li>Despite having those features, Docker practically doesn't impose any overhead since
+                the isolation from infrastructure is achieved by namespaces and not by virtualization.</li>
+                <li>Read more:<br/>
+                <a href="https://www.docker.com/whatisdocker/">https://www.docker.com/whatisdocker/</a>
+            </ul>
+
+            <h4>Why Armada?</h4>
+            <ul class="text">
+
+                <li>Armada gives you a lot of practical tools and suggested workflows for development,
+                deployment of microservices and migration of legacy applications.</li>
+                <li>With Armada you can quickly create light, disposable microservices, clone entire
+                sets of microservices and seamlessly update them.</li>
+                <li>Clear presentation of running services. They are all visible.
+                No more looking for obscure scripts in crontabs.</li>
+                <li>Separation of configuration from the code.</li>
+                <li>Development environment based on Vagrant.</li>
+                <li>Multiple ways for service-discovery (mini-DNS, local proxy, dynamic querying) -
+                you can choose whichever suits you best.</li>
+                <li>Consistent naming convention (ships, magellan, dockyard, container etc.)</li>
+                <li>Coolest name in microservices world :)</li>
+            </ul>
+        </ul>
+
+        <p/>
+        If you want to learn more about Armada features go to <a href="/intro/highlights">Armada Highlights</a>.
+      </div>
+</div>

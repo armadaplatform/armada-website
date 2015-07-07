@@ -1,0 +1,326 @@
+<link type="text/css" rel="stylesheet" href="/assets/css/article.css" />
+<div class="content">
+<h3>Service configuration.</h3>
+
+        <p/>
+        Development and production environments for the services can be very different.
+        There may be a difference in database addresses, domains used, verbosity of service output etc.
+        Presumably you keep those differences for your services in some kind of configuration file/files.
+        As there is a well known pattern of keeping the configuration separate from the code, we also strongly
+        recommend it.
+
+
+        <h4 id="legacy_configuration">Legacy services.</h4>
+
+        <p/>
+        Legacy service in this context means a service that is not yet suited to run on Armada.
+
+        <p/>
+        If the service that you want to armadize, chooses its configuration based on some
+        environment variables, you can set them at the moment of running the service:
+
+        <div class="code">
+            <div class="command">$ armada run coffee-counter -e "DATABASE_HOST=mysql.initech.com" -e "DATABASE_USER=peter" -e "DATABASE_PASSWORD=trustno1"</div>
+        </div>
+
+        <p/>
+        If the service relies on configuration file/files being placed under some specific path,
+        you can "insert" the file in the service container like that:
+
+        <div class="code">
+            <div class="command">$ armada run coffee-counter -v /etc/coffee-counter/users.txt</div>
+        </div>
+
+        <p/>
+        That file (it can also be whole directory) will be shared by the ship with the service
+        running inside the container.
+
+
+        <h4>Hermes. The Armada solution for service configuration.</h4>
+
+        <p/>
+        Previously mentioned methods can be used to quickly adapt your service to Armada platform,
+        but none of them is the preferred way.
+
+        <p/>
+        Let's look at the preferred Armada way of doing things by trying to modify the
+        coffee-counter service a little bit.
+        <br/>
+        For example, we may want to set the limit on coffees drunk in one go by each person.
+        It can be as high as 5 coffees in development environment (called <span class="inline-name">dev</span>),
+        and as low as 2 in production environment (called <span class="inline-name">production</span>).
+
+        <p/>
+        The preferred Armada way in its simplest form consists of these steps:
+
+<!--
+        <p/>
+        <ol>
+            <li>Gather all your configuration data in one place.</li>
+            <li>Provide a way for the configuration data to be sent to the ship where the service will be run.</li>
+            <li>Read the configuration in your code and adjust its behaviour depending on the configuration data.</li>
+            <li>Build and run the service.</li>
+        </ol>
+-->
+
+        <div style="margin-left: 50px; position: relative;">
+            <div style="position: absolute; left: -35px; color: black; font-weight: bold; font-family: consolas, courier;">
+            --&gt;
+            </div>
+
+            <p/>
+            Gather all your configuration data for all the environments in the files under one directory,
+            e.g. <span class="inline-name">config</span>.
+
+            <div class="code" style="background-color: #f1f0f0;">
+                <div class="command-result" style="color: #000000; margin-bottom: -20px;">
+config/
+    dev/
+    production/
+    qa/
+    ...
+                </div>
+            </div>
+
+            <p/>
+            Under each environment directory you can place any number of files. Their format doesn't matter for Armada.
+            We'll use json configuration format in our case:
+
+            <div class="code">
+                <div class="command">coffee-counter$ mkdir -p config/dev config/production</div>
+                <div class="command">coffee-counter$ echo '{ "coffee_limit": 5 }' > config/dev/config.json</div>
+                <div class="command">coffee-counter$ echo '{ "coffee_limit": 2 }' > config/production/config.json</div>
+            </div>
+        </div>
+
+        <div style="margin-left: 50px; position: relative; margin-top: 40px;">
+            <div style="position: absolute; left: -35px; color: black; font-weight: bold; font-family: consolas, courier;">
+            --&gt;
+            </div>
+
+            <p/>
+            Provide a way for the configuration data to be sent to the ship where the service will be run.
+            It must be placed under directory <span class="inline-name">/etc/opt/SERVICE_NAME-config/</span>,
+            where <span class="inline-name">SERVICE_NAME</span> is the name of your service image,
+            e.g. <span class="inline-name">coffee-counter</span>.
+            <br/>
+            This may seem the hard part, but in fact it can be easily achieved by running Armada service called
+            <span class="inline-name">courier</span>. Its purpose is exactly to move configuration files
+            from one place (git repository, directory on some server etc.) to Armada ship/ships.
+            Whether the ships are local or remote, <span class="inline-name">courier</span> can handle it.
+            <br/>
+            More details about <span class="inline-name">courier</span> can be found
+            <a href="/docs/page_under_construction#courier">here</a>.
+
+            <p/>
+            For the purpose of our guide we can simply link configuration directory that we've just created,
+            to the right destination path:
+            <div class="code">
+                <div class="command">coffee-counter$ ln -s `pwd`/config /etc/opt/coffee-counter-config</div>
+            </div>
+
+            <p/>
+            We're using <span class="inline-name">`pwd`</span> to get our current path,
+            because we want to use absolute path for the symbolic link.
+        </div>
+
+
+        <div style="margin-left: 50px; position: relative; margin-top: 40px;">
+            <div style="position: absolute; left: -35px; color: black; font-weight: bold; font-family: consolas, courier;">
+            --&gt;
+            </div>
+
+            <p/>
+            Read the configuration in your code and adjust its behaviour depending on the configuration data.
+
+            <div class="code">
+                <div class="command">coffee-counter$ vim src/coffee-counter.py</div>
+            </div>
+
+            <div class="code" style="background-color: #f1f0f0;">
+                <div class="host-info" style="background-color: #444444;">
+                    coffee-counter.py
+                </div>
+
+                <div class="command-result" style="color: #000000;">
+<span style='color:#806030; '>.</span><span style='color:#806030; '>.</span><span style='color:#806030; '>.</span>
+<span style="background-color: yellow;"><span style='color:#400000; font-weight:bold; '>import</span> hermes</span>
+<span style='color:#806030; '>.</span><span style='color:#806030; '>.</span><span style='color:#806030; '>.</span>
+<span style='color:#400000; font-weight:bold; '>class</span> Drink<span style='color:#806030; '>(</span>object<span style='color:#806030; '>)</span><span style='color:#806030; '>:</span>
+    <span style='color:#400000; font-weight:bold; '>def</span> POST<span style='color:#806030; '>(</span>self<span style='color:#806030; '>,</span> user<span style='color:#806030; '>,</span> count<span style='color:#806030; '>)</span><span style='color:#806030; '>:</span>
+<span style="background-color: yellow;">        config <span style='color:#806030; '>=</span> hermes<span style='color:#806030; '>.</span>get_config<span style='color:#806030; '>(</span><span style='color:#e60000; '>'config.json'</span><span style='color:#806030; '>)</span>
+        coffee_limit <span style='color:#806030; '>=</span> config<span style='color:#806030; '>.</span>get<span style='color:#806030; '>(</span><span style='color:#e60000; '>'coffee_limit'</span><span style='color:#806030; '>,</span> <span style='color:#c00000; '>1</span><span style='color:#806030; '>)</span>
+        <span style='color:#400000; font-weight:bold; '>if</span> <span style='color:#e34adc; '>int</span><span style='color:#806030; '>(</span>count<span style='color:#806030; '>)</span> <span style='color:#806030; '>></span> coffee_limit<span style='color:#806030; '>:</span>
+            <span style='color:#400000; font-weight:bold; '>return</span> <span style='color:#e60000; '>"You can't drink that much! The limit is {0}.\n"</span><span style='color:#806030; '>.</span>format<span style='color:#806030; '>(</span>coffee_limit<span style='color:#806030; '>)</span></span>
+        coffees<span style='color:#806030; '>[</span>user<span style='color:#806030; '>]</span> <span style='color:#806030; '>+</span><span style='color:#806030; '>=</span> <span style='color:#e34adc; '>int</span><span style='color:#806030; '>(</span>count<span style='color:#806030; '>)</span>
+        <span style='color:#400000; font-weight:bold; '>return</span> <span style='color:#e60000; '>"{0}'s coffee count is now {1}.\n"</span><span style='color:#806030; '>.</span>format<span style='color:#806030; '>(</span>user<span style='color:#806030; '>,</span> coffees<span style='color:#806030; '>[</span>user<span style='color:#806030; '>]</span><span style='color:#806030; '>)</span>
+<span style='color:#806030; '>.</span><span style='color:#806030; '>.</span><span style='color:#806030; '>.</span>
+                </div>
+            </div>
+
+<!--
+            <div class="code">
+                <div class="command">coffee-counter$ vim src/coffee-counter.py</div>
+                <div class="command-result">
+<i>...edit file...</i>
+<font color="yellow">import hermes</font>
+<i>...</i>
+class Drink(object):
+    def POST(self, user, count):
+<font color="yellow">        config = hermes.get_config('config.json')</font>
+<font color="yellow">        coffee_limit = config.get('coffee_limit', 1)</font>
+<font color="yellow">        if count > coffee_limit:</font>
+<font color="yellow">            return "You can't drink that much! The limit is {0}.\n".format(coffee_limit)</font>
+        coffees[user] += int(count)
+        return "{0}'s coffee count is now {1}.\n".format(user, coffees[user])
+<i>...</i>
+                </div>
+            </div>
+-->
+
+            <p/>
+            The highlighted lines are the ones that were added.
+            What happens here?
+            <br/>
+            We are using the function <span class="inline-name">get_config()</span> from the library
+            <span class="inline-name">hermes</span>. It looks for specified file
+            in the configuration directory and returns its contents.
+            If the file happens to have an extension <span class="inline-name">json</span>
+            (which is the case) it also parses the data for us.
+            <br/>
+            Library <span class="inline-name">hermes</span> is part of Armada and the simplest way
+            to use it is to base your service image on <span class="inline-name">microservice_python</span>
+            instead of <span class="inline-name">microservice</span>:
+
+            <div class="code">
+                <div class="command">coffee-counter$ vim Dockerfile</div>
+            </div>
+
+            <div class="code" style="background-color: #f1f0f0;">
+                <div class="host-info" style="background-color: #444444;">
+                    Dockerfile
+                </div>
+
+                <div class="command-result" style="color: #000000;">
+- <span style='color:#400000; font-weight:bold;'>FROM</span> microservice
++ <span style='color:#400000; font-weight:bold;'>FROM</span> microservice_python
+
+- <span style='color:#400000; font-weight:bold;'>RUN</span> apt-get install -y python python-dev python-pip
+- <span style='color:#400000; font-weight:bold;'>RUN</span> pip install -U web.py
+                </div>
+            </div>
+
+
+            <p/>
+            Similar libraries and base images may be already available for language/framework of your choice.
+            If there is none, it's quite easy to write your own <span class="inline-name">get_config()</span>
+            function once you know how the hermes works.
+
+            <div class="info-box">
+                <div style="margin-top: -10px; margin-bottom: -10px;">
+                <p/>
+                The idea behind hermes is that when Armada runs your service with environment specified
+                by <span class="inline-name">--env</span> it looks for the service configuration data
+                under the directory <span class="inline-name">/etc/opt/SERVICE_NAME-config/ENVIRONMENT</span>
+                on the ship.
+                <br/>
+                If such directory exists, Armada mounts it inside the service container and sets
+                environment variable named <span class="inline-name">CONFIG_PATH</span> that points to it.
+                So, all that <span class="inline-name">get_config()</span> function has to do
+                is to read the environment variable <span class="inline-name">CONFIG_PATH</span>,
+                check if requested file exists in there and return its contents.
+
+                <p/>
+                In reality this require only slightly more work as
+                <span class="inline-name">CONFIG_PATH</span> may consists of a series of paths
+                separated by colon. Your function should search for configuration file in any of them in that order.
+                It is analogous to how shell searches <span class="inline-name">PATH</span> environment
+                variable when executing programs.
+                <br/>
+                More details about hermes can be found
+                <a href="/docs/page_under_construction#hermes">here</a>.
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-left: 50px; position: relative; margin-top: 40px;">
+            <div style="position: absolute; left: -35px; color: black; font-weight: bold; font-family: consolas, courier;">
+            --&gt;
+            </div>
+
+            <p/>
+            Build and run the service.
+
+            <p/>
+            Let's build the modified service.
+
+            <div class="code">
+                <div class="command">coffee-counter$ armada build coffee-counter</div>
+                <div class="command-result">
+Pulling repository dockyard.armada.sh/microservice_python
+5612e0d94ce7: Download complete
+511136ea3c5a: Download complete
+<i>...(skipped)...</i>
+Removing intermediate container b4ccee7cb473
+Successfully built 61deaeef72b8
+                </div>
+            </div>
+
+            <p/>
+            Now we can check if switching the environment really works:
+
+            <div class="code">
+                <div class="command">$ armada run coffee-counter <font color="yellow">--env production</font> -d local</div>
+                <div class="command-result">
+Running microservice coffee-counter from dockyard:  (alias: local) locally...
+Service is running in container ca9ab262e9b2 available at addresses:
+  192.168.3.168:49241 (80/tcp)
+  192.168.3.168:49240 (22/tcp)
+                </div>
+                <div class="command">$ curl -X POST 192.168.3.168:49241/drink/Peter/4</div>
+                <div class="command-result">
+You can't drink that much! The limit is 2.
+                </div>
+
+                <div class="command">$ armada run coffee-counter <font color="yellow">--env dev</font> -d local</div>
+                <div class="command-result">
+Running microservice coffee-counter from dockyard:  (alias: local) locally...
+Service is running in container 6d826bf3eb92 available at addresses:
+  192.168.3.168:49243 (80/tcp)
+  192.168.3.168:49242 (22/tcp)
+                </div>
+                <div class="command">$ curl -X POST 192.168.3.168:49243/drink/Peter/4</div>
+                <div class="command-result">
+Peter's coffee count is now 4.
+                </div>
+            </div>
+
+            <p/>
+            Seems legit!
+
+            <p/>
+            Feel free to experiment further. For example you can try adding persistent storage to the service,
+            so that drank coffee data is not lost after service restart. You can use a database which
+            address/credentials can be stored in separate configuration file and differ among environments.
+        </div>
+
+        <h4>Additional info about hermes.</h4>
+
+        <p/>
+        As we've shown Armada offers convenient convention for managing configuration data for your services.
+        When writing new services, following this pattern can bring many benefits. Separation of configuration
+        from code usually means easier to understand and maintain code. Changes to the configuration can be
+        deployed independently of deploying the code. Running services in new environments is also much easier.
+        Keeping configuration data in one place means we can get rid of some mysterious configuration files placed
+        only on production servers etc.
+
+        <p>
+        If you just want to quickly adapt your existing service to Armada platform you can try sticking with
+        the intermediate solutions described in <a href="#legacy_configuration">here</a>.
+        Keep in mind that using <span class="inline-name">MICROSERVICE_ENV</span> environment variable
+        is recommended as it's understood by all Armada components such as magellan and
+        <span class="inline-name">armada</span> command itself.
+        <br/>
+        Also don't forget to consider taking advantage of the possibilities that Armada brings.
+        It may prove to be well worth the initial work.
+</div>

@@ -1,0 +1,42 @@
+---
+alias: intro/
+---
+<link type="text/css" rel="stylesheet" href="/assets/css/article.css" />
+<div class="content">
+<h3>Architecture overview</h3>
+
+        <p>
+        Armada cluster consists of a set of hosts called ships.
+        <p/>
+
+        <div style="text-align: center; margin-bottom: 30px;">
+            <a href="/assets/img/armada_ships.png"><img src="/assets/img/armada_ships.png" style="height: 240px;" /></a>
+        </div>
+
+        <p>
+        On each ship there is an Armada agent running which controls the entire Armada cluster.
+        With it you can create Docker images, push/pull them to/from repositories (called dockyards)
+        and run them on any ship. Microservices are based on common Armada-microservice image which enables
+        them to easily use service discovery mechanism and automatic configuration deployment.
+        </p>
+
+        <div style="text-align: center; margin-bottom: 30px; margin-top: 30px;">
+            <a href="/assets/img/armada_ship.png"><img src="/assets/img/armada_ship.png" style="height: 280px;" /></a>
+        </div>
+
+        <p>
+        Armada cluster runs within a local network and you can have multiple separated clusters dedicated
+        for environments, e.g. local/development, production and testing. You can share images between
+        Armada clusters by using dockyards and specific environment can be secured by restricting access to ships.
+
+        </p>
+        <p>
+        Active microservices are registered in highly available Consul catalog and Armada enables them to be
+        discovered and communicate with each other in multiple ways, e.g. mini-DNS, local proxy, dynamic querying.
+
+        </p>
+        <p>
+        Legacy and monolithic applications can co-exist with Armada-microservices, but Armada can make
+        them easier to deploy.
+    </p>
+</div>

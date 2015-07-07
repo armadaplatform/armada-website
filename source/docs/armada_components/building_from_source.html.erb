@@ -1,0 +1,23 @@
+<link type="text/css" rel="stylesheet" href="/assets/css/article.css" />
+<div class="content">
+
+            <h3>Building Armada image from source</h3>
+            <p>
+            Armada is run from within docker container. It's most recent image is available from repository <span class="inline-name">dockyard.armada.sh</span>.
+            All Armada companion services such as dockyard, magellan, courier etc. are also in there.
+            </p>
+
+            <p>
+            If you want to build your own images from scratch it's best to do it using Armada itself, e.g.:
+            </p>
+            <div class="code">
+            <div class="command">$ git clone https://github.com/armadaplatform/armada.git</div>
+            <div class="command">$ cd armada && armada build armada</div>
+            <div class="command">$ sudo service armada restart</div>
+            </div>
+            <p></p>
+            <div class="code">
+            <div class="command">$ git clone https://github.com/armadaplatform/magellan.git</div>
+            <div class="command">$ cd magellan && armada build magellan</div>
+            <div class="command">$ armada run magellan -d local</div>
+            </div>

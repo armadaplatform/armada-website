@@ -1,0 +1,193 @@
+<link type="text/css" rel="stylesheet" href="/assets/css/article.css" />
+<div class="content">
+        <h3>Running services</h3>
+
+        <p/>
+        Now that we have Armada ready, let's try to run a simple service on it.
+        We will use a service called <span class="inline-command">example</span>
+        which lets us see its system environment variables through HTTP api.
+        <div class="code">
+            <div class="command">$ armada run example</div>
+            <div class="command-result">
+Running microservice example from dockyard: dockyard.armada.sh (alias: armada) locally...
+Service is running in container 789731dc0ca4 available at addresses:
+  192.168.3.141:49156 (80/tcp)
+  192.168.3.141:49155 (22/tcp)
+            </div>
+        </div>
+
+
+        <p/>
+        First address is main service endpoint (mapping to port 80 inside service container).
+        Second address will allow us to ssh inside service container. We'll cover this topic later on.
+
+        So, let's check what our service can do:
+
+        <div class="code">
+            <div class="command">$ curl 192.168.3.141:49156</div>
+            <div class="command-result">
+{
+  "HOSTNAME": "789731dc0ca4",
+  "MICROSERVICE_APT_GET_UPDATE_DATE": "2014-08-11",
+  "CEREBRO_BASIC_APT_GET_UPDATE_DATE": "2014-07-14",
+  "MICROSERVICE_NAME": "example",
+  "SUPERVISOR_PROCESS_NAME": "example",
+  "SUPERVISOR_SERVER_URL": "unix:///var/run/supervisor.sock",
+  "RESTART_CONTAINER_PARAMETERS": "eyJlbnZpcm9ubWVudCI6IHsiTUlDUk9TRVJWSUNFX05BTUUiOiAiZXhhbXBsZSJ9L
+  CAiY29udGFpbmVyIjogImV4YW1wbGUiLCAicG9ydHMiOiB7fSwgInZvbHVtZXMiOiB7Ii92YXIvcnVuL2RvY2tlci5zb2NrIj
+  ogIi92YXIvcnVuL2RvY2tlci5zb2NrIn19",
+  "SUPERVISOR_ENABLED": "1",
+  "HOME": "/",
+  "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+  "SUPERVISOR_GROUP_NAME": "example"
+}
+            </div>
+        </div>
+
+        <p/>
+        It works :) Meaning of those variables is not that important at the moment.
+        <p/>
+        Important thing is that running a service through Armada is as simple as typing
+        <span class="inline-command">armada run example</span>.
+
+
+        <h4>Service environments</h4>
+
+        <p/>
+        Now we'll run another instance of <span class="inline-command">example</span> service with a twist.
+        We'll provide it with extra environment variable by using parameter <span class="inline-command">-e</span>.
+
+        <div class="code">
+            <div class="command">$ armada run example <font color="yellow">-e "EXTRA_VARIABLE=crazy-variable-11"</font></div>
+            <div class="command-result">
+Running microservice example from dockyard: dockyard.armada.sh (alias: armada) locally...
+Service is running in container a9992ef1f772 available at addresses:
+  192.168.3.141:49157 (22/tcp)
+  192.168.3.141:49158 (80/tcp)
+            </div>
+            <div class="command">$ curl 192.168.3.141:49158</div>
+            <div class="command-result">
+{
+  <font color="yellow">"EXTRA_VARIABLE": "crazy-variable-11",</font>
+  "HOSTNAME": "a9992ef1f772",
+<i>...(skipped)...</i>
+}
+            </div>
+        </div>
+
+        <p/>
+        As we can see, our extra parameter is present on the list.
+        <span class="inline-command">armada run</span> command allows us to provide as many
+        <span class="inline-command">-e</span> parameters as needed.
+        They can be used to alter behavior of the service, for example differentiating
+        development from production instance.
+
+        <p/>
+        Now let's try another Armada command <span class="inline-command">list</span>:
+
+        <div class="code">
+            <div class="command">$ armada list</div>
+            <div class="command-result">
+Name     Address              ID            Status   Tags
+armada   192.168.3.141:49153  ae148a2d3a1a  passing  -
+example  192.168.3.141:49156  789731dc0ca4  passing  -
+example  192.168.3.141:49158  a9992ef1f772  passing  -
+            </div>
+        </div>
+
+        <p/>
+        It lets us see all services running in Armada cluster (including armada itself).
+        <br/>
+        Service ID is globally unique id of container with the service.
+        <br/>
+        Status is one of
+        <span class="inline-command">passing</span>,
+        <span class="inline-command">warning</span>,
+        <span class="inline-command">critical</span> depending on service health checks.
+        <br/>
+        Tags are some extra information about a service.
+
+        <p/>
+        Ok, so looking on the list, how do we know which <span class="inline-command">example</span> service
+        is the first and which is the second one?
+        Right now it's easy, but when service catalog grows to many more services it can be much harder.
+        To help us differentiate the service we can use another
+        <span class="inline-command">armada run</span> parameter:
+
+        <div class="code">
+            <div class="command">$ armada run example <font color="yellow">--env funny-service</font></div>
+            <div class="command-result">
+Running microservice example from dockyard: dockyard.armada.sh (alias: armada) locally...
+Service is running in container f7a09fb19009 available at addresses:
+  192.168.3.141:49159 (22/tcp)
+  192.168.3.141:49160 (80/tcp)
+            </div>
+            <div class="command">$ armada list</div>
+            <div class="command-result">
+Name     Address              ID            Status   Tags
+armada   192.168.3.141:49153  ae148a2d3a1a  passing  -
+example  192.168.3.141:49156  789731dc0ca4  passing  -
+example  192.168.3.141:49158  a9992ef1f772  passing  -
+example  192.168.3.141:49160  f7a09fb19009  passing  [<font color="yellow">'env:funny-service'</font>]
+            </div>
+        </div>
+
+        <p/>
+        Aha! As we can see using the parameter <span class="inline-command">--env</span>
+        helps us spot specific instance of the service right away.
+        Internally <span class="inline-command">--env</span> parameter is just a shorthand
+        for using <span class="inline-command">-e "MICROSERVICE_ENV=funny-service"</span>, what we can
+        prove by running:
+
+        <div class="code">
+            <div class="command">$ curl 192.168.3.141:49160</div>
+            <div class="command-result">
+{
+  "HOSTNAME": "f7a09fb19009",
+  <font color="yellow">"MICROSERVICE_ENV": "funny-service",</font>
+<i>...(skipped)...</i>
+}
+            </div>
+        </div>
+
+        <p/>
+        The environment variable <span class="inline-command">MICROSERVICE_ENV</span> sits right there.
+
+
+        <h4>Other fun stuff</h4>
+
+        <p/>
+        So far we have run our <span class="inline-command">example</span> services only on local host.
+        But with Armada running it on some remote host (ship) would be just as simple:
+        <span class="inline-command">armada run example --ship johnny-ship</span>.
+        We'll cover the topic of many ships in one armada in more details later.
+
+        <p/>
+        We have run some services, we obviously also have a way to stop them:
+
+        <div class="code">
+            <div class="command">$ armada stop 789</div>
+            <div class="command-result">
+Stopping service 789...
+Service has been stopped.
+            </div>
+            <div class="command">$ armada list</div>
+            <div class="command-result">
+Name     Address              ID            Status   Tags
+armada   192.168.3.141:49153  ae148a2d3a1a  passing  -
+example  192.168.3.141:49158  a9992ef1f772  passing  -
+example  192.168.3.141:49160  f7a09fb19009  passing  ['env:funny-service']
+            </div>
+        </div>
+
+        <p/>
+        We didn't have to write full service ID, only few first characters which uniquely select our service.
+        If you are familiar with <span class="inline-command">docker</span> commands, it works the same way.
+        If we had only one <span class="inline-command">example</span> service we could also write
+        <span class="inline-command">armada stop example</span>.
+
+        <p/>
+        If you're still longing to learn more about Armada,
+        please go to <a href="/intro/getting_started/building_services/">Building services</a> part.
+
+</div>

@@ -1,0 +1,252 @@
+<link type="text/css" rel="stylesheet" href="/assets/css/article.css" />
+<div class="content">
+<h3>Building services</h3>
+        <p/>
+        We now know how to run and stop services. But how to actually build them?
+        Before we build one from scratch, let's start with modifying our
+        <span class="inline-command">example</span> service a little bit.
+        Instead of showing environment variables in random order we will return them
+        in an ordered manner sorted by variable name.
+        <div class="code">
+            <div class="command">$ mkdir -p /tmp/example ; cd /tmp/example ; curl -sLO http://armada.sh/intro/example.zip ; unzip example.zip</div>
+            <div class="command-result">
+Archive:  example.zip
+  inflating: Dockerfile
+   creating: src/
+  inflating: src/app.js
+<i>...(skipped)...</i>
+            </div>
+            <div class="command">/tmp/example$ vim ./src/routes/index.js</div>
+            <div class="command-result">
+<i>...edit file...</i>
+exports.index = function(request, response)
+{
+    var output = '';
+    Object.keys(process.env).sort().
+        forEach(function(var_name) {
+            output += '  "' + var_name + '": "' + process.env[var_name] + "\"\n";
+        });
+    response.send(output);
+};
+            </div>
+        </div>
+
+        <p/>
+        Our change is in place, we'll now use another Armada command to build new service image:
+
+        <div class="code">
+            <div class="command">/tmp/example$ armada build example</div>
+            <div class="command-result">
+Pulling repository dockyard.armada.sh/microservice_node
+b1c1208331bb: Download complete
+511136ea3c5a: Download complete
+<i>...(skipped)...</i>
+Removing intermediate container ddb95e1eddb0
+Removing intermediate container b9b891eb90ce
+            </div>
+        </div>
+
+        <p/>
+        If you used docker before, this kind of output should look familiar.
+        In fact what we did now is we've built a new docker image containing our modified service.
+        This time, to run it we'll use a new parameter <span class="inline-command">-d local</span>.
+        It prevents Armada from downloading service image from its default repository.
+        Rather it will use the image we've just built that resides on your local docker repository.
+
+        <div class="code">
+            <div class="command">/tmp/example$ armada run example <font color="yellow">-d local</font></div>
+            <div class="command-result">
+Running microservice example from dockyard:  (alias: local) locally...
+Service is running in container efe0e1ab41e5 available at addresses:
+  192.168.3.141:49156 (80/tcp)
+  192.168.3.141:49155 (22/tcp)
+            </div>
+            <div class="command">/tmp/example$ curl 192.168.3.141:49156</div>
+            <div class="command-result">
+  "CEREBRO_BASIC_APT_GET_UPDATE_DATE": "2014-07-14"
+  "HOME": "/"
+  "HOSTNAME": "efe0e1ab41e5"
+  "MICROSERVICE_APT_GET_UPDATE_DATE": "2014-08-11"
+  "MICROSERVICE_NAME": "example"
+<i>...(skipped)...</i>
+  "SUPERVISOR_SERVER_URL": "unix:///var/run/supervisor.sock"
+            </div>
+        </div>
+
+        <p/>
+        Indeed the output is now sorted!
+        <p/>
+        As you can see modifying existing service, running it, and verifying changes
+        is a matter of few simple steps.
+        You don't have to install the entire environment required by the service in your system
+        which is often very time-consuming and can leave unnecessary mess.
+        Also, sometimes it can be almost impossible when services have conflicting
+        requirements (different glibc versions etc.). With docker it's no more the case.
+
+
+        <h4>Dockyard - service image repository</h4>
+
+        <p/>
+        Another concept that we've mentioned before is service image repository
+        - a place where you store all your service images ready to be deployed.
+        Armada uses docker repositories which we conveniently call dockyards.
+        You can use your existing docker repository if you have one or create your own using helper Armada service.
+        <div class="code">
+            <div class="command">$ armada run dockyard -v /tmp/mydockyard:/repository -p 10000:80</div>
+            <div class="command-result">
+Running microservice dockyard from dockyard: dockyard.armada.sh (alias: armada) locally...
+Service is running in container 27cc85f15888 available at addresses:
+  <font color="yellow">192.168.3.141:10000</font> (80/tcp)
+  192.168.3.141:49161 (22/tcp)
+            </div>
+        </div>
+
+        <p/>
+        We have added parameter <span class="inline-command">-p 10000:80</span>, because this time we want
+        the dockyard to be available at constant address (port 10000), not at some random port assigned by docker.
+
+        <p/>
+        Parameter <span class="inline-command">-v</span> works the same way as in docker.
+        That means directory <span class="inline-command">/tmp/mydockyard</span> from your machine will be mapped
+        to directory <span class="inline-command">/repository</span> inside dockyard service
+        that we've just run.
+        <p/>
+        It's important to remember that containers running our services don't maintain their state
+        after stopping them. In order to preserve data produced by the service (in our case
+        it's a repository of service images) we can mount directories from inside container to your host machine.
+        <p/>
+        Let Armada know about our newly created repository.
+
+        <div class="code">
+            <div class="command">$ armada dockyard set myrepo <font color="yellow">192.168.3.141:10000</font></div>
+            <div class="command-result">
+ Warning!
+ Your dockyard alias has been set BUT:
+  If you are trying to use dockyard using HTTP protocol make sure that its address is added to docker insecure registries list,
+e.g.:
+        echo DOCKER_OPTS=\"\$DOCKER_OPTS --insecure-registry 192.168.3.141:10000\" | sudo tee --append /etc/default/docker
+        sudo service docker restart
+        sudo service armada restart
+  All docker containers will be stopped! armada services will be restarted.
+            </div>
+        </div>
+
+        <p/>
+        The warning message above tells us that the image repository we're going to use is not trusted.
+        It is served with non-secure HTTP protocol, not using any SSL certificates. If we want Docker
+        to be able to push/pull to this repository we have to add it to the "insecure-registry" list.
+        <p/>
+        The easiest way to do it is by running those 3 above commands that Armada conveniently prepared for us.
+        After running them, we can try:
+
+        <div class="code">
+            <div class="command">$ armada dockyard list</div>
+            <div class="command-result">
+Default  Alias   Address              User  Password
+         armada  dockyard.armada.sh
+     -&gt;  myrepo  192.168.3.141:10000
+            </div>
+        </div>
+
+        <p/>
+        Using command <span class="inline-command">armada dockyard list</span> we can see
+        a list of image repositories which Armada knows about.
+        You can have as many repositories as you need, for example local company repository
+        and remote production repository.
+        <p/>
+        First listed repository (alias <span class="inline-command">armada</span>) is a public Armada
+        repository that contains a number of helper services (such as already known
+        <span class="inline-command">example</span>, <span class="inline-command">dockyard</span>)
+        and armada itself. That's where we were downloading those services from in previous parts.
+        <p/>
+        After adding our new repository, Armada has set it to default
+        (<span class="inline-command">-&gt;</span> sign),
+        which means <span class="inline-command">armada run</span> will look for service images
+        there in the first place.
+        <p/>
+        But first, we have to upload something there.
+
+        <div class="code">
+            <div class="command">$ armada push example</div>
+            <div class="command-result">
+Pushing microservice example to dockyard: 192.168.3.141:10000...
+The push refers to a repository [192.168.3.141:10000/example] (len: 1)
+Sending image list
+Pushing repository 192.168.3.141:10000/example (1 tags)
+511136ea3c5a: Image successfully pushed
+<i>...(skipped)...</i>
+43e83b0e7d58: Image successfully pushed
+e66bb335bef7: Image successfully pushed
+Pushing tag for rev [e66bb335bef7] on {http://192.168.3.141:10000/v1/repositories/example/tags/latest}
+            </div>
+        </div>
+
+        <p/>
+        If you want to upload image to dockyard which is not currently default,
+        you can use <span class="inline-command">-d</span> parameter, e.g.
+        <span class="inline-command">armada push example -d production_aws</span>.
+        <p/>
+        We can check that the image is in fact stored on our machine:
+
+        <div class="code">
+            <div class="command">$ ls -l /tmp/mydockyard/repositories/library/</div>
+            <div class="command-result">
+total 4
+drwxr-xr-x 2 root root 4096 Oct 14 08:52 example
+            </div>
+        </div>
+
+        <h4>Upgrading services</h4>
+        <p/>
+        Now, instead of simply running the service, let's do something different.
+        Let's try to upgrade one of our <span class="inline-command">example</span> services
+        run in previous parts. Remember?
+
+        <div class="code">
+            <div class="command">$ armada list</div>
+            <div class="command-result">
+Name      Address              ID            Status   Tags
+armada    192.168.3.141:49153  ae148a2d3a1a  passing  -
+dockyard  192.168.3.141:10000  27cc85f15888  passing  -
+example   192.168.3.141:49156  efe0e1ab41e5  passing  -
+example   192.168.3.141:49158  a9992ef1f772  passing  -
+example   192.168.3.141:49160  <font color="yellow">f7a</font>09fb19009  passing  [<font color="yellow">'env:funny-service'</font>]
+            </div>
+        </div>
+
+        <p/>
+        Upgrading a service can be as simple as restarting it with newly built image.
+
+        <div class="code">
+            <div class="command">$ armada restart <font color="yellow">f7a</font></div>
+            <div class="command-result">
+Restarting service f7a...
+Service has been restarted and is running in container 50d6e904a684 available at addresses:
+  192.168.3.141:49159 (22/tcp)
+  192.168.3.141:49160 (80/tcp)
+            </div>
+            <div class="command">$ curl 192.168.3.141:49184</div>
+            <div class="command-result">
+  "CEREBRO_BASIC_APT_GET_UPDATE_DATE": "2014-07-14"
+  "HOME": "/"
+  "HOSTNAME": "50d6e904a684"
+  "MICROSERVICE_APT_GET_UPDATE_DATE": "2014-08-11"
+  <font color="yellow">"MICROSERVICE_ENV": "funny-service"</font>
+  "MICROSERVICE_NAME": "example"
+<i>...(skipped)...</i>
+  "SUPERVISOR_SERVER_URL": "unix:///var/run/supervisor.sock"
+            </div>
+        </div>
+
+        <p/>
+        The results are now sorted, and we can see that the variable
+        <span class="inline-command">MICROSERVICE_ENV</span> is preserved.
+        The same would be true for other parameters supplied for the first time that we started this service.
+
+        <p/>
+        To sum it up, upgrading a service with Armada is a breeze!
+
+        <p/>
+        Now, how about <a href="/intro/getting_started/creating_new_service/">creating new one</a>?
+
+</div>

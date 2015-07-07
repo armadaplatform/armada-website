@@ -1,0 +1,253 @@
+<link type="text/css" rel="stylesheet" href="/assets/css/article.css" />
+<div class="content">
+<h3>Basic service discovery.</h3>
+
+        <p/>
+        Armada is well suited for running backend services. It provides few alternative
+        ways for finding the address where some service is running. One of them is discovery
+        by domain name, currently available for HTTP services.
+        <br/>
+        The solution consists of two core Armada services running on Armada platform:
+        <span class="inline-name">main-haproxy</span> and <span class="inline-name">magellan</span>.
+        <span class="inline-name">main-haproxy</span> runs HAProxy configured to direct
+        HTTP requests for specific domain to corresponding service registered in the Armada catalog.
+        <span class="inline-name">magellan</span> is responsible for providing
+        <span class="inline-name">main-haproxy</span> with appropriate configuration file.
+
+        <div class="info-box">
+            <div style="margin-top: -10px; margin-bottom: -10px;">
+            <p/>
+            <a href="http://www.haproxy.org" target="_blank">HAProxy</a>
+            is a very fast and reliable piece of software that can redirect TCP and HTTP-based traffic.
+            The idea for using it to aid service discovery is similar to the one used
+            at <a href="http://nerds.airbnb.com/smartstack-service-discovery-cloud/" target="_blank">SmartStack</a>.
+            </div>
+        </div>
+
+        <p/>
+        Suppose we want to access our coffee-counter service through URL
+        <span class="inline-name">http://coffee-counter.initech.com</span>.
+        Replace <span class="inline-name">initech.com</span> with any other domain that you are in control of.
+        We need:
+
+        <p/>
+        <ol>
+            <li>Service coffee-counter running and registered in the Armada catalog.</li>
+            <li>Service <span class="inline-name">main-haproxy</span> running on one or more of our ships.</li>
+            <li>Ability to direct <span class="inline-name">initech.com</span> domain's traffic
+                to our <span class="inline-name">main-haproxy</span>.</li>
+            <li>Service <span class="inline-name">magellan</span> running on one of our ships.</li>
+            <li>Service <span class="inline-name">magellan</span> configured to link domain
+                <span class="inline-name">coffee-counter.initech.com</span> to service coffee-counter.</li>
+        </ol>
+
+        <p/>
+        We've already covered step 1 before, so that's an instant check.
+        If you are able to run coffee-counter service on already existing Armada cluster
+        with <span class="inline-name">main-haproxy</span> &
+        <span class="inline-name">magellan</span> already configured you can skip steps
+        2-4 and go to <a href="#setup_magellan">setup magellan</a>.
+
+
+        <h4>Step 2. Run main-haproxy.</h4>
+
+        <p/>
+        We can run <span class="inline-name">main-haproxy</span> with the following command:
+
+        <div class="code">
+            <div class="command">$ armada run main-haproxy -p 80:80 --env dev/guide</div>
+            <div class="command-result">
+Running microservice main-haproxy from dockyard: dockyard.armada.sh (alias: armada) locally...
+Service is running in container 908d83383b40 available at addresses:
+  192.168.3.168:80 (80/tcp)
+  192.168.3.168:49228 (22/tcp)
+            </div>
+
+            <div class="command">$ armada list</div>
+            <div class="command-result">
+Name            Address              ID            Status   Tags
+armada          192.168.3.168:49212  a765ce08de9f  passing  -
+coffee-counter  192.168.3.168:49227  08991fb89f72  passing  -
+main-haproxy    192.168.3.168:80     908d83383b40  passing  ['env:dev/guide']
+            </div>
+        </div>
+
+        <p/>
+        Parameter <span class="inline-name">-p 80:80</span> instructs Armada to assign container's
+        internal port 80 (the one after colon) to port 80 on the host machine (the one before colon)
+        without choosing it randomly.
+        <br/>
+        Port 80 is a port that HAProxy service inside main-haproxy listens on.
+        Parameter <span class="inline-name">--env dev/guide</span> will be used to find this
+        specific instance of <span class="inline-name">main-haproxy</span> by
+        <span class="inline-name">magellan</span> service.
+
+        <h4>Step 3. Direct traffic to main-haproxy.</h4>
+
+        <p/>
+        You should configure your domain (<span class="inline-name">initech.com</span>)
+        to point to the IP of the ship that <span class="inline-name">main-haproxy</span> runs on.
+        <br/>
+        You can configure just the domain <span class="inline-name">coffee-counter.initech.com</span>
+        or use a wildcard such as <span class="inline-name">*.initech.com</span>.
+        The second approach is favorable if you can afford it, as then you will be able to
+        discover further Armada services without going back to configuring each domain separately.
+
+        <p/>
+        If you just want to play with Armada without changing any DNS records, for the purpose of this guide
+        you can redirect the domain in <span class="inline-name">/etc/hosts</span> file:
+
+        <div class="code">
+            <div class="command">$ sudo sh -c "echo 127.0.0.1 coffee-counter.initech.com >> /etc/hosts"</div>
+        </div>
+
+        <p/>
+        Unfortunately redirecting all <span class="inline-name">initech.com</span> subdomains
+        (<span class="inline-name">*.initech.com</span>) at once is not possible that way.
+
+        <h4>Step 4. Run magellan.</h4>
+
+        <p/>
+        We have to let <span class="inline-name">magellan</span> know
+        which <span class="inline-name">main-haproxy</span>'s configuration it should take care of.
+        We can do it by running it with the same enviroment set:
+
+
+        <div class="code">
+            <div class="command">$ armada run magellan --env dev/guide</div>
+            <div class="command-result">
+Running microservice magellan from dockyard: dockyard.armada.sh (alias: armada) locally...
+Service is running in container 30ae20b5837f available at addresses:
+  192.168.3.168:49230 (80/tcp)
+  192.168.3.168:49231 (22/tcp)
+            </div>
+
+            <div class="command">$ armada list</div>
+            <div class="command-result">
+Name            Address              ID            Status   Tags
+armada          192.168.3.168:49212  a765ce08de9f  passing  -
+coffee-counter  192.168.3.168:49227  08991fb89f72  passing  -
+magellan        192.168.3.168:49230  30ae20b5837f  passing  ['env:dev/guide']
+main-haproxy    192.168.3.168:80     908d83383b40  passing  ['env:dev/guide']
+            </div>
+        </div>
+
+        <p/>
+        It is running but doesn't do anything very useful yet. Let's give it some services to discover then.
+
+        <h4 id="setup_magellan">Step 5. Setup magellan.</h4>
+
+        <p/>
+        Magellan utilizes "Armada way" of service configuration called <b>hermes</b>. You can find
+        more information about it in the next chapter.
+        Right now it will be sufficient to know that magellan config should be placed under the
+        directory <span class="inline-name">/etc/opt/magellan-config</span>.
+
+        <p/>
+        If you are operating on an already existing Armada cluster, it may be possible that
+        there is a service named <span class="inline-name">courier</span> running.
+        It can automatically put services' configuration into directory under
+        <span class="inline-name">/etc/opt/</span> after committing it to the git repository
+        that holds it. You can ask your Armada cluster administrator if it is configured
+        in such a way, and if so is there any git repository through which you can configure magellan.
+
+        <p/>
+        If there is no <span class="inline-name">courier</span> service running on your Armada,
+        you can write <span class="inline-name">magellan</span> configuration manually:
+
+        <div class="code">
+            <div class="command">$ mkdir -p /etc/opt/magellan-config</div>
+            <div class="command">$ vim /etc/opt/magellan-config/domains-coffee-counter.json</div>
+            <div class="command-result">
+<i>...edit file...</i>
+{
+    "coffee-counter.initech.com": {
+        "protocol": "http",
+        "service_name": "coffee-counter"
+    }
+}
+            </div>
+        </div>
+
+        <p/>
+        If directory <span class="inline-name">/etc/opt/magellan-config</span> didn't exist at the
+        time <span class="inline-name">magellan</span> service was started, we have to let it know
+        that the configuration is now available. It's sufficient to restart the service:
+
+        <div class="code">
+            <div class="command">$ armada restart magellan</div>
+            <div class="command-result">
+Restarting service magellan...
+Stopping service 30ae20b5837f...
+Service has been stopped.
+Running microservice magellan from dockyard: dockyard.armada.sh (alias: armada) locally...
+Service has been restarted and is running in container 58cb71ec7835 available at addresses:
+  192.168.3.168:49232 (22/tcp)
+  192.168.3.168:49233 (80/tcp)
+            </div>
+        </div>
+
+        <p/>
+        To verify if the magellan works as expected we can query its main endpoint:
+
+        <div class="code">
+            <div class="command">$ curl 192.168.3.168:49233</div>
+            <div class="command-result">
+{
+    "coffee-counter.initech.com": [
+        "192.168.3.168:49227"
+    ]
+}
+            </div>
+        </div>
+
+        <p/>
+        It tells us that it will configure <span class="inline-name">main-haproxy</span> in a way
+        that it will direct all requests for domain
+        <span class="inline-name">coffee-counter.initech.com</span> to address
+        <span class="inline-name">192.168.3.168:49227</span>.
+        <br/>
+        As you may remember that's exactly the address of our coffee-counter service!
+        Let's finally test it:
+
+        <div class="code">
+            <div class="command">$ curl -X POST coffee-counter.initech.com/drink/Peter/3</div>
+            <div class="command-result">
+Peter's coffee count is now 5.
+            </div>
+        </div>
+
+        <p/>
+        Yes! That's exactly what we wanted to achieve.
+        <br/>
+        No matter what port will Docker randomly assign to our service,
+        the <span class="inline-name">magellan</span> will take care of configuring
+        <span class="inline-name">main-haproxy</span> so that the domain
+        <span class="inline-name">coffee-counter.initech.com</span> will always point at it.
+
+        <h4>Additional info.</h4>
+
+        <p/>
+        Using <span class="inline-name">magellan</span> & <span class="inline-name">main-haproxy</span>
+        as described above has also other advantages.
+        <br/>
+        If we run more than one instance of our coffee-counter service (likely on different ships),
+        <span class="inline-name">magellan</span> will find all of them and configure
+        <span class="inline-name">main-haproxy</span> to round robin among them.
+        Thus we get load balancing almost "for free".
+        <br/>
+        Services that enter <span class="inline-name">critical</span> state (for example because
+        of ship failure) will automatically drop out from the round robin.
+        Hence the emphasis on using/writing proper health checks. That topic is discussed in more details
+        <a href="/docs/page_under_construction#health_checks">here</a>.
+        <br/>
+
+        <p/>
+        More details on that service duo, as well as information about other available
+        service discovery methods can be found
+        <a href="/docs/page_under_construction#service_discovery">here</a>.
+
+        <p/>
+        If you want to learn more about service configuration please proceed
+        to the <a href="/docs/service_configuration">next chapter</a>.
+</div>

@@ -1,0 +1,12 @@
+*.BAK
+.bundle
+.divshot-cache
+.DS_Store
+.mm-pid-*
+.rbenv-version
+.ruby-version
+.rvmrc
+.sass-cache
+bin
+build
+Gemfile.lock

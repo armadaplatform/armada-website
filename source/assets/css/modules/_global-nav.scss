@@ -1,0 +1,66 @@
+.global-nav-header {
+    background-image: url("../img/armada_visual_bg.jpg");
+    background-position: 0px -400px ;
+    padding: 40px;
+}
+
+.global-nav {
+  padding: 30px;
+  width: 1200px;
+  margin: 0 auto;
+  position: center;
+  background-color: #fff;
+  color: #192b3c;
+  position: relative;
+}
+
+.global-nav-middleman-signature {
+  display: none;
+
+  @include media($medium-screen-up) {
+    display: inline-block;
+  }
+}
+
+.logo-text {
+  float: left;
+  font-size: $h4-font-size;
+  font-weight: $font-weight-bold;
+}
+
+.global-nav-list {
+  background-image: url('../img/armada_visual_bg.jpg');
+  float: right;
+  line-height: 2em;
+}
+
+.global-nav-item {
+  display: inline-block;
+  font-size: 14px;
+  font-family: "Lato";
+  padding: 0px 15px;
+  text-transform: uppercase;
+  font-weight: 700;
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  a {
+    color: #192b3c;
+
+    &:hover {
+      color: #12aaeb;
+    }
+  }
+}
+
+a.cta-link-nav {
+  border: 1px solid $global-nav-link-color;
+  border-radius: #12aaeb;
+  padding: 0.35em 0.5em;
+
+  &:hover {
+    color: #12aaeb;
+  }
+}

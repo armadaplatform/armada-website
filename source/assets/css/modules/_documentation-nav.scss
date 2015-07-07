@@ -1,0 +1,60 @@
+.toc-block-container {
+  display: none;
+  height: 100%;
+  overflow: hidden;
+  width: 200px;
+  @include media($medium-screen-up) {
+    display: block;
+  }
+  float:left;
+}
+
+.toc-block {
+  margin-bottom: 2em;
+  overflow:hidden;
+}
+
+.docs-section-heading {
+  color: #12AAEB;
+  padding: 10px 0px;
+  border: 1px;
+  border-bottom: 1px solid rgba(0, 0, 0, .1);
+  font-size: 18px;
+  font-weight: $font-weight-bold;
+  font-family: Lato;
+  overflow:hidden;
+
+}
+
+.doc-item {
+  overflow:hidden;
+  font-family: Lato;
+  &:last-child {
+    border: none;
+  }
+
+  a {
+    color: darken($mm-slate-gray, 10);
+    display: block;
+    padding: 0.34em 0.5em;
+    transition: all 0.15s ease;
+
+    &:hover {
+      color: fade(#12AAEB, 30);
+      font-weight: 900;
+    }
+  }
+}
+
+.doc-item .doc-item-active {
+  color: #666;
+  font-weight: 900;
+}
+
+.docs-section-heading .doc-item-active {
+  font-weight: 900;
+}
+
+.main {
+  float: right;
+}

@@ -1,0 +1,29 @@
+---
+alias: download/
+---
+<link type="text/css" rel="stylesheet" href="/assets/css/article.css" />
+<div class="content">
+            <h3>Get Armada</h3>
+            <p>
+            Armada currently runs only on Linux with <a href="http://docker.com/" target="_blank">Docker</a> installed.</br>
+            If you want to learn and play with Armada on your own machine (whether it's Windows, Mac or Linux)
+            you can do it using e.g. Vagrant box. Install <a href="https://www.virtualbox.org/wiki/Downloads" target="_blank">VirtualBox</a> and <a href="http://www.vagrantup.com/" target="_blank">Vagrant</a>. Then:
+            </p>
+            <div class="code">
+            <div class="command">$ curl -sLO http://armada.sh/install/Vagrantfile</div>
+            <div class="command">$ vagrant up</div>
+            <div class="command">$ vagrant ssh</div>
+            </div>
+            <p>
+            If you don't have curl available, you can download it from
+            <a href="http://curl.haxx.se/download.html" target="_blank">here</a>.
+            </p>
+            <p>
+            To run Armada natively on Linux, first
+            <a href="https://docs.docker.com/linux/step_one/" target="_blank">install Docker</a>,
+            then run the installation script:
+            </p>
+            <div class="code">
+            <div class="command">$ bash <(curl -sL http://armada.sh/install)</div>
+            </div>
+</div>

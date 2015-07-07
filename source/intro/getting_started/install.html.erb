@@ -1,0 +1,80 @@
+<link type="text/css" rel="stylesheet" href="/assets/css/article.css" />
+<div class="content">
+        <h3 id="installation">Armada installation</h3>
+        <p>
+        Armada currently runs only on Linux with <a href="http://docker.com/" target="_blank">Docker</a> installed.
+        <br/>
+        If you want to learn and play with Armada on your own machine (whether it's Windows, Mac or Linux)
+        you can do it using e.g. Vagrant box.
+
+        Install <a href="https://www.virtualbox.org/wiki/Downloads" target="_blank">VirtualBox</a>
+        and <a href="http://www.vagrantup.com/" target="_blank">Vagrant</a>. Then:
+        <div class="code">
+            <div class="command">$ curl -sLO http://armada.sh/install/Vagrantfile</div>
+            <div class="command">$ vagrant up</div>
+            <div class="command">$ vagrant ssh</div>
+        </div>
+
+
+        <p/>
+        If you don't have curl available, you can download it from
+        <a href="http://curl.haxx.se/download.html" target="_blank">here</a>.
+
+        <p/>
+        To run Armada natively on Linux, first
+        <a href="https://docs.docker.com/linux/step_one/" target="_blank">install Docker</a>,
+        then run the installation script:
+        <div class="code">
+            <div class="command">$ bash <(curl -sL http://armada.sh/install)</div>
+        </div>
+
+        <br/>
+
+        <p/>
+        Armada runs within its own docker container, which you can see by running
+        <span class="inline-command">docker ps | grep armada</span>.
+        To verify the installation try running <span class="inline-command">armada --help</span>.
+        You should see Armada command line tool help page:
+        <div class="code">
+            <div class="command">$ armada --help</div>
+            <div class="command-result">
+usage: armada.py [-h] [--version]
+                 {name,join,promote,shutdown,dockyard,list,info,run,stop,restart,recover,ssh,build,push,create,version,diagnose}
+
+                 ...
+
+positional arguments:
+  {name,join,promote,shutdown,dockyard,list,info,run,stop,restart,recover,ssh,build,push,create,version,diagnose}
+    name                get/set name for this ship
+    join                join another armada
+    promote             promote ship to commander role
+    shutdown            gently remove ship from armada and prepare for service
+                        shutdown
+    dockyard            manage dockyard aliases
+    list                show list of running microservices
+    info                show list of ships within current armada
+    run                 run container with microservice
+    stop                stop container with microservice
+    restart             restart container with microservice
+    recover             run containers from JSON file with saved containers'
+                        parameters
+    ssh                 ssh into container with microservice
+    build               build container with microservice
+    push                push container with microservice to dockyard
+    create              create skeleton for new microservice
+    version             display armada version
+    diagnose            run diagnostic check on a container
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+            </div>
+        </div>
+
+        <br>
+
+        <p/>
+        If everything looks good, we can get our feet wet
+        and go <a href="/intro/getting_started/running_services/">run some services</a>!
+
+</div>

@@ -1,0 +1,47 @@
+<link type="text/css" rel="stylesheet" href="/assets/css/article.css" />
+<div class="content">
+<h3>Armada components.</h3>
+        <p/>
+        Using Armada, you also have access to various armadized services that can help you take
+        full advantage of Armada good practices. Here is a list of all Armada repositories:
+
+
+        <h4>Core Armada.</h4>
+
+        <ul class="text">
+            <li><a href="https://github.com/armadaplatform/armada">armada</a> - Main Armada repository. It contains Armada agent & Armada command line interface.</li>
+            <li><a href="https://github.com/armadaplatform/vagrant">vagrant</a> - It is used to build vagrant image that contains preinstalled Armada platform.</li>
+            <li><a href="https://github.com/armadaplatform/armada-website">armada-website</a> - Main Armada website and documentation.</li>
+            <li><a href="https://github.com/armadaplatform/example">example</a> - Very simple service that can be used to test various Armada features, written using node.js.</li>
+            <li><a href="https://github.com/armadaplatform/example-python">example-python</a> - As above, written using Python.</li>
+            <li><a href="https://github.com/armadaplatform/example-php">example-php</a> - As above, written using PHP.</li>
+            <li><a href="https://github.com/armadaplatform/example-multi">example-multi</a> - Demonstrates ability to register multiple services in Armada catalog from single container.</li>
+        </ul>
+
+
+        <h4>Service configuration.</h4>
+
+        <ul class="text">
+            <li><a href="https://github.com/armadaplatform/courier">courier</a> - Service for deploying configuration for Armada services independently from the image of the service.</li>
+        </ul>
+
+
+        <h4>Service discovery.</h4>
+
+        <ul class="text">
+            <li><a href="https://github.com/armadaplatform/magellan">magellan</a> - Service for configuring load-balancers to redirect net traffic to microservices that run in the Armada cluster.</li>
+            <li><a href="https://github.com/armadaplatform/armada-bind">armada-bind</a> - It can be used to connect armada services with non-armada ones.</li>
+        </ul>
+
+        <p/>
+        Using magellan + main-haproxy is a recommended way for service discovery via DNS addresses on Armada platform.
+
+
+        <h4>Armadized 3rd party services.</h4>
+
+        <ul class="text">
+            <li><a href="https://github.com/armadaplatform/dockyard">dockyard</a> - Docker registry - a place to store your docker container images. It is accompanied by nginx server which allows adding authentication layer and connection encryption with SSL.</li>
+            <li><a href="https://github.com/armadaplatform/main-haproxy">main-haproxy</a> - HAProxy. It can be used to redirect and load balance your HTTP traffic.</li>
+            <li><a href="https://github.com/armadaplatform/mysql">mysql</a> - MySQL server accompanied with phpMyAdmin interface configured to access it.</li>
+            <li><a href="https://github.com/armadaplatform/redis">redis</a> - Redis server, possible to run in single instance or master-slave setup.</li>
+        </ul>

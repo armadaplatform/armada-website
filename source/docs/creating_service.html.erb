@@ -1,0 +1,75 @@
+---
+alias: docs/
+---
+<link type="text/css" rel="stylesheet" href="/assets/css/article.css" />
+<div class="content">
+<h3>Creating Armada service.</h3>
+        <p/>
+        If you went through <a href="/intro/getting_started/install/">Getting Started</a> series, you should
+        already have a feel for how to operate services on Armada.
+        In this guide we will show what is needed for the service to run on Armada smoothly
+        and what problems Armada helps to solve.
+
+        <p/>
+        There are only a handful of steps needed to adapt your existing service to run on Armada.
+        If you want to create a service from scratch the easiest way is to use one of our templates, like:
+
+        <div class="code">
+            <div class="command">$ armada create microservice_python_template -n my_fancy_service</div>
+        </div>
+
+        <p/>
+        That way most of the steps are already done and you can focus on adding new functionalities
+        to the template service. Just as it has been described in
+        <a href="/intro/getting_started/building_services/">Getting Started - Building services</a> part.
+
+        <p/>
+        But because we want to learn more about Armada, we will go the "harder" way.
+        We will assume that we already have a running service (or just its foundation) and want
+        to run it on Armada.
+        As an example we will use service <span class="inline-name">coffee-counter</span>
+        which purpose is to count number of coffees drunk by its users. It is written in python using simple
+        <a href="https://github.com/webpy/webpy" target="_blank">web.py</a> framework:
+
+<!--
+    http://tohtml.com/python/ Style: Bred3
+-->
+
+        <div class="code" style="background-color: #f1f0f0;">
+            <div class="host-info" style="background-color: #444444;">
+                coffee-counter.py
+            </div>
+
+            <div class="command-result" style="color: #000000;">
+<span style='color:#400000; font-weight:bold; '>from</span> collections <span style='color:#400000; font-weight:bold; '>import</span> Counter
+<span style='color:#400000; font-weight:bold; '>import</span> web
+<span style='color:#400000; font-weight:bold; '>import</span> json
+
+coffees <span style='color:#806030; '>=</span> Counter<span style='color:#806030; '>(</span><span style='color:#806030; '>)</span>
+
+<span style='color:#400000; font-weight:bold; '>class</span> Drink<span style='color:#806030; '>(</span>object<span style='color:#806030; '>)</span><span style='color:#806030; '>:</span>
+    <span style='color:#400000; font-weight:bold; '>def</span> POST<span style='color:#806030; '>(</span>self<span style='color:#806030; '>,</span> user<span style='color:#806030; '>,</span> count<span style='color:#806030; '>)</span><span style='color:#806030; '>:</span>
+        coffees<span style='color:#806030; '>[</span>user<span style='color:#806030; '>]</span> <span style='color:#806030; '>+</span><span style='color:#806030; '>=</span> <span style='color:#e34adc; '>int</span><span style='color:#806030; '>(</span>count<span style='color:#806030; '>)</span>
+        <span style='color:#400000; font-weight:bold; '>return</span> <span style='color:#e60000; '>"{0}'s coffee count is now {1}.\n"</span><span style='color:#806030; '>.</span>format<span style='color:#806030; '>(</span>user<span style='color:#806030; '>,</span> coffees<span style='color:#806030; '>[</span>user<span style='color:#806030; '>]</span><span style='color:#806030; '>)</span>
+
+<span style='color:#400000; font-weight:bold; '>class</span> Report<span style='color:#806030; '>(</span>object<span style='color:#806030; '>)</span><span style='color:#806030; '>:</span>
+    <span style='color:#400000; font-weight:bold; '>def</span> GET<span style='color:#806030; '>(</span>self<span style='color:#806030; '>)</span><span style='color:#806030; '>:</span>
+        <span style='color:#400000; font-weight:bold; '>return</span> json<span style='color:#806030; '>.</span>dumps<span style='color:#806030; '>(</span>coffees<span style='color:#806030; '>)</span>
+
+<span style='color:#400000; font-weight:bold; '>def</span> main<span style='color:#806030; '>(</span><span style='color:#806030; '>)</span><span style='color:#806030; '>:</span>
+    urls <span style='color:#806030; '>=</span> <span style='color:#806030; '>(</span>
+        <span style='color:#e60000; '>'/drink/(.*)/(.*)'</span><span style='color:#806030; '>,</span> Drink<span style='color:#806030; '>.</span><span style='color:#e34adc; '>__name__</span><span style='color:#806030; '>,</span>
+        <span style='color:#e60000; '>'/report'</span><span style='color:#806030; '>,</span> Report<span style='color:#806030; '>.</span><span style='color:#e34adc; '>__name__</span><span style='color:#806030; '>,</span>
+    <span style='color:#806030; '>)</span>
+    app <span style='color:#806030; '>=</span> web<span style='color:#806030; '>.</span>application<span style='color:#806030; '>(</span>urls<span style='color:#806030; '>,</span> <span style='color:#e34adc; '>globals</span><span style='color:#806030; '>(</span><span style='color:#806030; '>)</span><span style='color:#806030; '>)</span>
+    app<span style='color:#806030; '>.</span>run<span style='color:#806030; '>(</span><span style='color:#806030; '>)</span>
+
+<span style='color:#400000; font-weight:bold; '>if</span> <span style='color:#e34adc; '>__name__</span> <span style='color:#806030; '>=</span><span style='color:#806030; '>=</span> <span style='color:#e60000; '>'__main__'</span><span style='color:#806030; '>:</span>
+    main<span style='color:#806030; '>(</span><span style='color:#806030; '>)</span>
+            </div>
+        </div>
+
+        <p/>
+        You can run services written in almost any language or framework on Armada and the instruction
+        for "armadizing" it will be similar to the one described in the
+        <a href="/docs/development_environment">next chapters</a>.

@@ -1,0 +1,183 @@
+<link type="text/css" rel="stylesheet" href="/assets/css/article.css" />
+<div class="content">
+ <h3>Armada Highlights</h3>
+
+        <h4>Manage services on any server from any server.</h4>
+        <div class="code">
+            <div class="command">$ armada run fraud-finder --ship behemot</div>
+            <div class="command-result">
+Running microservice fraud-finder from dockyard: dockyard.initech.com on remote ship: behemot...
+Service is running in container c803fd8129a7 available at addresses:
+  192.168.3.141:49168 (80/tcp)
+  192.168.3.141:49167 (22/tcp)
+            </div>
+            <div class="command">$ armada stop daily-promo-mailing</div>
+            <div class="command-result">
+Stopping microservice daily-promo-mailing...
+Service has been stopped.
+            </div>
+        </div>
+
+
+        <h4>Manage multiple image repositories (development, production etc.).</h4>
+        <div class="code">
+            <div class="command">$ armada dockyard list</div>
+            <div class="command-result">
+Default  Alias       Address                    User   Password
+     ->  dev         dockyard.local
+         production  dockyard.example.com:5000  admin  secret
+            </div>
+            <div class="command">$ armada push fraud-finder -d production</div>
+            <div class="command-result">
+Pushing microservice fraud-finder to dockyard: dockyard.example.com:5000 (alias: production)...
+<i>...(skipped)...</i>
+Image has been pushed.
+            </div>
+        </div>
+
+
+        <h4>Create new services right away based on convenient templates.</h4>
+        <div class="code">
+            <div class="command">$ armada create microservice_python_template -n killer-service</div>
+            <div class="command-result">
+Service killer-service has been created in /home/maria/killer-service.
+            </div>
+            <div class="command"><i>$ ...edit files...</i></div>
+            <div class="command">$ armada build killer-service</div>
+            <div class="command-result">
+Pulling repository dockyard.armada.sh/microservice_python
+<i>...(skipped)...</i>
+Successfully built 3be42e99ca6a
+            </div>
+            <div class="command">$ armada push killer-service</div>
+            <div class="command-result">
+Pushing microservice killer-service to dockyard: dockyard.local...
+<i>...(skipped)...</i>
+Image has been pushed.
+            </div>
+            <div class="command">$ armada run killer-service</div>
+            <div class="command-result">
+Running microservice killer-service from dockyard: dockyard.local locally...
+Service is running in container 81d6b5473e39 available at addresses:
+  192.168.0.50:49397 (80/tcp)
+  192.168.0.50:49396 (22/tcp)
+            </div>
+        </div>
+
+
+        <h4>Utilize power of vagrant to quickly setup services on your own box.</h4>
+        <div class="code">
+            <div class="command">$ vagrant up</div>
+            <div class="command-result">
+Bringing machine 'default' up with 'virtualbox' provider
+<i>...(skipped)...</i>
+==> default: Machine booted and ready!
+<i>...(skipped)...</i>
+            </div>
+            <div class="command">$ vagrant ssh</div>
+            <div class="command-result">
+Welcome to Ubuntu 14.04.1 LTS (GNU/Linux 3.13.0-24-generic x86_64)
+
+* Documentation:  https://help.ubuntu.com/
+Last login: Wed Sep 24 10:43:28 2014 from 10.0.2.2
+            </div>
+            <div class="command">vagrant@ubuntu-14:~$ armada run</div>
+            <div class="command-result">
+Running microservice killer-service from dockyard: dockyard.local locally...
+Service is running in container cda8e994567b available at addresses:
+  192.168.0.50:4999 (80/tcp)
+  192.168.0.50:2999 (22/tcp)
+            </div>
+        </div>
+
+
+        <h4>Build and deploy new versions of all your services in consistent way.</h4>
+        <div class="code">
+            <div class="command">$ armada build killer-service</div>
+            <div class="command-result">
+Pulling repository dockyard.local/microservice_python
+<i>...(skipped)...</i>
+Successfully built 3be42e99ca6a
+            </div>
+            <div class="command">$ armada push killer-service</div>
+            <div class="command-result">
+Pushing microservice killer-service to dockyard: dockyard.local...
+<i>...(skipped)...</i>
+Image has been pushed.
+            </div>
+            <div class="command">production.initech.com$ armada restart killer-service</div>
+            <div class="command-result">
+Restarting service killer-service...
+Service has been restarted and is running in container 275a58a771ec available at addresses:
+  192.168.0.50:49399 (80/tcp)
+  192.168.0.50:49398 (22/tcp)
+            </div>
+        </div>
+
+
+        <h4>Discover services via nice urls.</h4>
+        <div class="code">
+            <div class="command">$ armada run games-portal --env green-theme</div>
+            <div class="command-result">
+Running microservice games-portal from dockyard: dockyard.local locally...
+Service is running in container fc6776c8f6da available at addresses:
+  192.168.1.43:49272 (80/tcp)
+  192.168.1.43:49271 (22/tcp)
+            </div>
+            <div class="command">$ curl http://green-theme.games-portal.example.com</div>
+            <div class="command-result">
+&lt;!doctype html&gt;
+&lt;html&gt;
+<i>...(skipped)...</i>
+            </div>
+        </div>
+
+
+        <h4>Service monitoring based on user defined health checks.</h4>
+        <div class="code">
+            <div class="command">$ armada list</div>
+            <div class="command-result">
+Name       Address             ID            Status   Tags
+analytics  192.168.0.11:49341  db7966f53c3a  critical ['env:production']
+backend    192.168.0.17:49367  2939313eb2c1  passing  ['env:production']
+mailing    192.168.0.7:49322   1e07320224a6  warning  ['env:production']
+web        192.168.0.13:49361  f1e824c44786  passing  ['env:production']
+            </div>
+        </div>
+
+
+        <h4>Separate code from configuration.</h4>
+        <p/>
+        Armada automatically delivers right configuration for your service environment taking it
+        from configurable source such as git. If you run the service with:
+        <div class="code">
+            <div class="command">$ armada run game --env production</div>
+        </div>
+        <p/>
+        and have the config repo:
+        <p/>
+        <img src="/assets/img/game_config_repo.png" />
+        <p/>
+        then you can use the following code to access config files:
+        <div class="code">
+            <div class="command-result">
+games_db_config = hermes.get_config('games_db.json')
+mysql_connect(games_db_config['host'], games_db_config['user'], games_db_config['password'])
+            </div>
+        </div>
+        <p/>
+        The code is the same for dev and production.
+
+
+        <h4>Connect to dependent services (and load balance between them) in the simplest way possible.</h4>
+        <p/>
+        There's a HAProxy instance running in each container responsible for discovering and load balancing services.
+        <div class="code">
+            <div class="command-result">
+def get_affiliates_list():
+   AFFILIATES_LIST_PORT = 4001
+   url = 'http://localhost:{port}/list'.format(port = AFFILIATES_LIST_PORT)
+   return requests.get(url).text
+            </div>
+        </div>
+</div>

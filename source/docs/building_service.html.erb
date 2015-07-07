@@ -1,0 +1,326 @@
+<link type="text/css" rel="stylesheet" href="/assets/css/article.css" />
+<div class="content">
+        <h3>Writing the Dockerfile.</h3>
+
+        <p/>
+        Armada services are run as <a href="https://www.docker.com" target="_blank">Docker</a> containers.
+        In order to build one with our service, we need to create its Dockerfile.
+        It consists of a list of steps that need to be executed to install and run our service.
+        Let's look at an example:
+
+        <div class="code" style="background-color: #f1f0f0;">
+            <div class="host-info" style="background-color: #444444;">
+                Dockerfile
+            </div>
+
+            <div class="command-result" style="color: #000000; margin-bottom: -20px;">
+<span style='color:#400000; font-weight:bold;'>FROM</span> microservice
+<span style='color:#400000; font-weight:bold;'>MAINTAINER</span> Peter Gibbons &lt;peter@initech.com&gt;
+
+<span style='color:#400000; font-weight:bold;'>RUN</span> apt-get install -y python python-dev python-pip
+<span style='color:#400000; font-weight:bold;'>RUN</span> pip install -U web.py
+
+<span style='color:#400000; font-weight:bold;'>ADD</span> . /opt/coffee-counter
+<span style='color:#400000; font-weight:bold;'>ADD</span> ./supervisor/coffee-counter.conf /etc/supervisor/conf.d/
+
+<span style='color:#400000; font-weight:bold;'>EXPOSE</span> 80
+            </div>
+        </div>
+
+
+        <p/>
+        Explanation of the above line by line:
+
+        <div class="code" style="background-color: #f1f0f0;">
+            <div style="position: absolute; left: -35px; color: black; font-weight: bold;">
+            --&gt;
+            </div>
+            <div class="command-result" style="color: #000000; margin-bottom: -20px;">
+<span style='color:#400000; font-weight:bold;'>FROM</span> microservice
+            </div>
+        </div>
+
+        <p/>
+        <span class="inline-name">FROM</span> must be the first instruction in the Dockerfile.
+        It tells docker which base image to use. On top of this image all other work will be done.
+        <br/>
+        In Armada's case we recommend to base your service on <span class="inline-name">microservice</span>
+        image. Currently it is based on Ubuntu 14.04 and provides some extra features like ssh access,
+        auto-registering in Armada service catalog and few more goodies which we'll cover later on.
+        <br/>
+        If you are armadizing a service which already has it's own Dockerfile and you want
+        to take advantage of it without changing your base image to
+        <span class="inline-name">microservice</span>, this case is covered in guide
+        <a href="/docs/page_under_construction#armadizing_legacy_docker_services">here</a>.
+
+        <div class="code" style="background-color: #f1f0f0; margin-top: 40px;">
+            <div style="position: absolute; left: -35px; color: black; font-weight: bold;">
+            --&gt;
+            </div>
+            <div class="command-result" style="color: #000000; margin-bottom: -20px;">
+<span style='color:#400000; font-weight:bold;'>MAINTAINER</span> Peter Gibbons &lt;peter@initech.com&gt;
+            </div>
+        </div>
+
+        <p/>
+        This instruction will stamp your name on generated image. It's a good practice to insert it after
+        <span class="inline-name">FROM</span>.
+
+        <div class="code" style="background-color: #f1f0f0; margin-top: 40px;">
+            <div style="position: absolute; left: -35px; color: black; font-weight: bold;">
+            --&gt;
+            </div>
+            <div class="command-result" style="color: #000000; margin-bottom: -20px;">
+<span style='color:#400000; font-weight:bold;'>RUN</span> apt-get install -y python python-dev python-pip
+<span style='color:#400000; font-weight:bold;'>RUN</span> pip install -U web.py
+            </div>
+        </div>
+
+        <p/>
+        Here we provide a list of commands that will setup all necessary packages, libraries etc.
+        that our service relies on.
+        The steps can be as simple as above or a bit more complicated such as downloading files from the web,
+        compiling libraries, modifying configuration files and so on.
+        All those commands will be run as root in the container used to build our image.
+        If you are unsure about the best way to install framework X, library Y or service Z, you can consult
+        Dockerfiles of some existing services. Usually there will already be a service with similar requirements.
+
+        <div class="code" style="background-color: #f1f0f0; margin-top: 40px;">
+            <div style="position: absolute; left: -35px; color: black; font-weight: bold;">
+            --&gt;
+            </div>
+            <div class="command-result" style="color: #000000; margin-bottom: -20px;">
+<span style='color:#400000; font-weight:bold;'>ADD</span> . /opt/coffee-counter
+<span style='color:#400000; font-weight:bold;'>ADD</span> ./supervisor/coffee-counter.conf /etc/supervisor/conf.d/
+            </div>
+        </div>
+
+        <p/>
+        Above instructions will "upload" content from our filesystem into the image.
+        First one will put whole service code into the directory
+        <span class="inline-name">/opt/coffee-counter</span>.
+        We use the convention <span class="inline-name">/opt/SERVICE_NAME</span> in all core
+        Armada services and we recommend you to use it as well. Your fellow developers will
+        appreciate not having to search for service code elsewhere.
+        <br/>
+        Second line will put only one file into the directory
+        <span class="inline-name">/etc/supervisor/conf.d/</span>. Here is that file contents:
+
+        <div class="code" style="background-color: #f1f0f0; margin-top: 40px;">
+            <div class="host-info" style="background-color: #444444;">
+                coffee-counter.conf
+            </div>
+
+            <div class="command-result" style="color: #000000; margin-bottom: -20px;">
+[<span style='color:#400000; font-weight:bold;'>program</span>:coffee-counter]
+<span style='color:#400000; font-weight:bold;'>directory</span>=/opt/coffee-counter/src
+<span style='color:#400000; font-weight:bold;'>command</span>=python coffee-counter.py 80
+            </div>
+        </div>
+
+        <p/>
+        If you know <a href="http://supervisord.org" target="_blank">supervisord</a> this should be easy
+        to understand. If not, you can probably guess that this will be used to actually run our service
+        inside the container. If you need to run more processes in your service you can add
+        separate similar config files and drop them into
+        <span class="inline-name">/etc/supervisor/conf.d/</span> directory.
+        Although you should always consider whether splitting the big service into smaller
+        services isn't more appropriate solution.
+
+        <div class="info-box">
+            <p/>
+            <div style="margin-top: -10px; margin-bottom: -10px;">
+            Why can't we just insert
+            <span class="inline-name">RUN cd /opt/coffee-counter/src && python coffee-counter.py 80</span>
+            in the Dockerfile?
+            That's because in the process of building our image, docker executes every
+            <span class="inline-name">RUN</span> command, but in the end it saves only the resulting
+            filesystem state in the image (plus some extra metadata like
+            <span class="inline-name">MAINTAINER</span>). Information about running processes is lost.
+
+            <p/>
+            When docker runs previously saved image it recreates the filesystem and runs only single command.
+            That command is specified in Dockerfile with the instruction <span class="inline-name">CMD</span>.
+            To allow more separate processes to run inside single container we can use some process
+            manager like <a href="http://supervisord.org" target="_blank">supervisord</a> that spawns
+            the other ones.
+
+            <p/>
+            You can read more about it in an article:
+            <a href="https://docs.docker.com/articles/using_supervisord/" target="_blank">Using Supervisor with Docker</a>.
+            </div>
+        </div>
+
+        <p/>
+        Unless you want to fiddle with "Armada way" of running services, you don't need to specify
+        <span class="inline-name">CMD</span> instruction in your Dockerfile since it is already
+        defined in the <span class="inline-name">microservice</span> image.
+
+        <div class="code" style="background-color: #f1f0f0; margin-top: 40px;">
+            <div style="position: absolute; left: -35px; color: black; font-weight: bold;">
+            --&gt;
+            </div>
+            <div class="command-result" style="color: #000000; margin-bottom: -20px;">
+<span style='color:#400000; font-weight:bold;'>EXPOSE</span> 80
+            </div>
+        </div>
+
+        <p/>
+        Here we declare what TCP/UDP ports from our service container should be exposed to the outside world.
+        We should insert every port that we would like to access after the service is run.
+        As a convention for REST services we recommend running it on port 80. That way it will
+        also be automatically registered in Armada service catalog.
+        If you want to use another port/ports look
+        <a href="/docs/page_under_construction#service_internal_port">here</a>.
+
+        <div class="info-box">
+            <div style="margin-top: -10px; margin-bottom: -10px;">
+            <p/>
+            Exposing port 80 from the container doesn't mean that it will be mapped to that
+            same port number on the host machine.
+            This is decided at the moment of running the image. By default every exposed port
+            will be assigned more or less random free port on the host. That way, even if internally
+            many services bind to the port 80 they will be viewed as different ports to the outside world.
+            </div>
+        </div>
+
+        <br>
+        <hr>
+
+        <h4>Additional info about Dockerfiles.</h4>
+
+        <ul class="text">
+            <p/>
+            <li/><span class="inline-name">FROM</span> instruction must be the first in the Dockerfile.
+            But you can freely mix other ones as is convenient for you.
+
+            <p/>
+            <li/>Image <span class="inline-name">microservice</span> has
+            <span class="inline-name">supervisord</span> configured such that everything inside
+            the container is run as <span class="inline-name">root</span>.
+            <br/>
+            We find it quite convenient convention, but if you need more security inside your container
+            you are free to run your service as less privileged user, e.g. by using
+            <span class="inline-name">sudo</span>. That can make sense if you are running
+            more than one service inside one container and want to prevent compromising one of them
+            to escalate on the others.
+
+            <p/>
+            <li/>Armada provides more than just the <span class="inline-name">microservice</span> base image.
+            There are base images suitable for use with various languages and frameworks, such as
+            <span class="inline-name">microservice_python</span>,
+            <span class="inline-name">microservice_node</span>,
+            <span class="inline-name">microservice_php</span> etc. Each of them is based on the
+            <span class="inline-name">microservice</span> so they share all the same good
+            stuff but with something extra. In fact if we would use:
+
+            <div class="code" style="background-color: #f1f0f0; margin-top: 10px; margin-bottom: 10px;">
+                <div class="command-result" style="color: #000000; margin-bottom: -20px;">
+    <span style='color:#400000; font-weight:bold;'>FROM</span> microservice_python
+                </div>
+            </div>
+
+            in the Dockerfile, we could skip the lines:
+
+            <div class="code" style="background-color: #f1f0f0; margin-top: 10px; margin-bottom: 10px;">
+                <div class="command-result" style="color: #000000; margin-bottom: -20px;">
+    <span style='color:#400000; font-weight:bold;'>RUN</span> apt-get install -y python python-dev python-pip
+    <span style='color:#400000; font-weight:bold;'>RUN</span> pip install -U web.py
+                </div>
+            </div>
+
+            as they are already included in the <span class="inline-name">microservice_python</span> image.
+            <br/>
+            Indeed in the final version we should do it like that. Using common base images
+            (such as <span class="inline-name">microservice_python</span>) has more advantages, such as faster
+            image building, faster image uploading to dockyards and taking less space.
+
+            <p/>
+            <li/>Every docker image that you build can be used as a base image for another service.
+            It's very easy to build an image (or images) that provide some common functionality required
+            by few of your services. For example it may be an image with some of your proprietary stack
+            preinstalled etc.
+
+            <p/>
+            <li/>Some good practices for writing Dockerfiles can be found
+            <a href="/docs/page_under_construction#dockerfile_good_practices">here</a>.
+
+            <p/>
+            <li/>Docker documentation on writing Dockerfiles:
+            <a href="https://docs.docker.com/reference/builder/" target="_blank">https://docs.docker.com/reference/builder/</a>.
+        </ul>
+
+        <br>
+        <hr>
+
+        <h4>Building and running the service.</h4>
+
+        <p/>
+        After writing the Dockerfile we should be ready to build and run our service:
+
+        <div class="code">
+            <div class="command">coffee-counter$ armada build coffee-counter</div>
+            <div class="command-result">
+Pulling repository dockyard.armada.sh/microservice
+691329d6b51c: Download complete
+511136ea3c5a: Download complete
+<i>...(skipped)...</i>
+Removing intermediate container 40ebb74e2419
+Successfully built b595776d8041
+            </div>
+
+            <div class="command">coffee-counter$ armada run coffee-counter -d local</div>
+            <div class="command-result">
+Running microservice coffee-counter from dockyard:  (alias: local) locally...
+Service is running in container 93697f6e1847 available at addresses:
+  192.168.3.168:49227 (80/tcp)
+  192.168.3.168:49226 (22/tcp)
+            </div>
+
+            <div class="command">coffee-counter$ curl -X POST http://192.168.3.168:49227/drink/Peter/2</div>
+            <div class="command-result">
+Peter's coffee count is now 2.
+            </div>
+
+        </div>
+
+        <p/>
+        Looks good!
+
+        <div class="info-box">
+            <div style="margin-top: -10px; margin-bottom: -10px;">
+            <p/>
+            If your service doesn't respond as expected, make sure that it binds to every network interface.
+            Listening on <span class="inline-name">localhost</span> is not enough. Armada runs containers
+            with bridged networking enabled so docker creates separate interface
+            <span class="inline-name">eth0</span> inside the container for communication with the host.
+            You can either read its IP address in your service or just go the easy way and bind
+            to every interface by listening on <span class="inline-name">0.0.0.0</span>.
+            </div>
+        </div>
+
+        <p/>
+        Now let's see if our service registered in Armada catalog properly:
+
+        <div class="code">
+            <div class="command">coffee-counter$ armada list</div>
+            <div class="command-result">
+Name            Address              ID            Status   Tags
+armada          192.168.3.168:49212  a765ce08de9f  passing  -
+coffee-counter  192.168.3.168:49227  93697f6e1847  passing  -
+            </div>
+        </div>
+
+        <p/>
+        It has!
+        <br/>
+        The service is on the list, and its status is <span class="inline-name">passing</span>.
+        That's because it is using default health check, that just checks if we are able
+        to connect to the service's specified port.
+        If you need more sophisticated health checks that topic is covered
+        <a href="/docs/page_under_construction#health_checks">here</a>.
+
+        <p/>
+        Now that we have our service up and running properly, let's move on to
+        <a href="/docs/basic_service_discovery/">other interesting topics</a>.
+</div>

@@ -1,0 +1,197 @@
+<link type="text/css" rel="stylesheet" href="/assets/css/article.css" />
+<div class="content">
+<h3>Connecting ships</h3>
+        <p/>
+        One of the nice thing about Armada is that once we have access to one ship (server with Armada agent),
+        we can manage services on any other ship in its Armada cluster.
+        <p/>
+        After installing Armada on a server it becomes one-ship Armada cluster. We can check cluster status
+        with following command:
+
+        <div class="code">
+            <div class="command">$ armada info</div>
+            <div class="command-result">
+Ship name      Ship role  API address          API status
+192.168.3.141  leader     192.168.3.141:49153  passing
+
+WARNING: We cannot survive leader leaving/failure.
+Such configuration should only be used in development environments.
+            </div>
+        </div>
+
+        <p/>
+        Ship name by default is the server's IP address.
+        <br/>
+        Ship role is one of
+        <span class="inline-command">leader</span>,
+        <span class="inline-command">commander</span>,
+        <span class="inline-command">ship</span>. If you are familiar with some services using
+        <a href="http://raftconsensus.github.io" target="_blank">Raft Consensus Algorithm</a>, it directly translates
+        to leader, server (consensus member) and client roles.
+        We won't go into further details right now, as this is explained in one of our Armada guides.
+        <br/>
+        API address is an address through which Armada agents talk to each other.
+        <br/>
+        API status has the same meaning as in <span class="inline-command">armada list</span> command.
+
+        <p/>
+        We'll deploy another ship right now. Then we'll join it with the first one to form bigger Armada cluster.
+        <br/>
+        You can try running code below on another host, or in some separate directory created for second Vagrant box.
+
+        <div class="code other">
+            <div class="host-info">
+                Host: behemot
+            </div>
+
+            <div class="command">$ curl -sLO http://armada.sh/install/Vagrantfile</div>
+            <div class="command">$ vagrant up</div>
+            <div class="command">$ vagrant ssh</div>
+
+            <div class="command">vagrant$ armada info</div>
+            <div class="command-result">
+Ship name      Ship role  API address          API status
+192.168.3.177  leader     192.168.3.177:49153  passing
+
+WARNING: We cannot survive leader leaving/failure.
+Such configuration should only be used in development environments.
+            </div>
+            <div class="command">vagrant$ armada join 192.168.3.141</div>
+            <div class="command-result">
+{u'status': u'ok'}
+            </div>
+            <div class="command">vagrant$ armada info</div>
+            <div class="command-result">
+Ship name      Ship role  API address          API status
+192.168.3.141  leader     192.168.3.141:49153  passing
+192.168.3.177  ship       192.168.3.177:49153  passing
+
+WARNING: We cannot survive leader leaving/failure.
+Such configuration should only be used in development environments.
+            </div>
+        </div>
+
+        <p/>
+        It looks like we have an Armada cluster consisting of two ships!
+        Currently there is no strict limit on the number of ships that can join Armada cluster,
+        so we could continue adding many more.
+
+
+        <h4>Running services on remote ships</h4>
+        <p/>
+        Let's go back to our first ship now.
+        We'll demonstrate how easy it is to run service on another ship:
+        <div class="code">
+            <div class="command">$ armada run upcase-service --ship 192.168.3.177</div>
+            <div class="command-result">
+Running microservice upcase-service from dockyard: 192.168.3.141:10000 (alias: myrepo) on remote ship: 192.168.3.177...
+Service is running in container aebd4da2633d available at addresses:
+  192.168.3.177:49155 (22/tcp)
+  192.168.3.177:49156 (80/tcp)
+            </div>
+            <div class="command">$ armada list</div>
+            <div class="command-result">
+Name            Address              ID            Status   Tags
+armada          192.168.3.141:49153  ae148a2d3a1a  passing  -
+armada          192.168.3.177:49153  ca0f177a32c1  passing  -
+dockyard        192.168.3.141:10000  27cc85f15888  passing  -
+example         192.168.3.141:49156  efe0e1ab41e5  passing  -
+example         192.168.3.141:49158  a9992ef1f772  passing  -
+example         192.168.3.141:49160  fc6776c8f6da  passing  ['env:funny-service']
+upcase-service  192.168.3.141:49166  275a58a771ec  passing  -
+<font color="yellow">upcase-service  192.168.3.177:49156  aebd4da2633d  passing  -</font>
+            </div>
+        </div>
+
+        <p/>
+        That's it!
+        <p/>
+        In order for it to be even easier we can give custom names to ships by using command
+        <span class="inline-command">armada name</span>.
+
+        <div class="code other">
+            <div class="host-info">
+                Host: behemot
+            </div>
+
+            <div class="command">vagrant$ armada name behemot</div>
+            <div class="command-result">
+{u'status': u'ok'}
+            </div>
+        </div>
+
+        <br/>
+
+        <div class="code">
+            <div class="command">$ armada info</div>
+            <div class="command-result">
+Ship name      Ship role  API address          API status
+192.168.3.141  leader     192.168.3.141:49153  passing
+behemot        ship       192.168.3.177:49153  passing
+
+WARNING: We cannot survive leader leaving/failure.
+Such configuration should only be used in development environments.
+            </div>
+        </div>
+
+        <p/>
+        The name has been propagated to other ship.
+        Now we could also use <span class="inline-command">armada run upcase-service --ship behemot</span>
+        to run the service on that remote ship without having to remember its IP address.
+
+
+        <h4>Insecure dockyards</h4>
+        <p/>
+        In reality there would be one more step required to be able to run the service from our own registry
+        on the remote ship. Because our dockyard is available only by non-secure HTTP protocol, we'd have
+        to add it to Docker's insecure registries list on the remote ship as well.
+        <p/>
+        To do it, it is enough to execute the same 3 commands that were shown in previous chapter.
+
+        <div class="code other">
+            <div class="host-info">
+                Host: behemot
+            </div>
+            <div class="command">&nbsp;</div>
+            <div class="command">$ echo DOCKER_OPTS=\"\$DOCKER_OPTS --insecure-registry 192.168.3.141:10000\" | sudo tee --append /etc/default/docker</div>
+            <div class="command">$ sudo service docker restart</div>
+            <div class="command">$ sudo service armada restart</div>
+        </div>
+
+
+        <h4>Other remote commands</h4>
+        <p/>
+        Few other Armada commands such as <span class="inline-command">armada stop</span>,
+        <span class="inline-command">armada restart</span> and <span class="inline-command">armada ssh</span>
+        also work on remote ships.
+
+        <div class="code other">
+            <div class="host-info">
+                Host: behemot
+            </div>
+
+            <div class="command">vagrant$ armada stop upcase-service</div>
+            <div class="command-result">
+Stopping service upcase-service...
+Service has been stopped.
+            </div>
+        </div>
+
+        <p/>
+        The above command would work from any ship in our Armada cluster.
+
+
+        <h4>Learn more</h4>
+        <p/>
+        The best way to learn Armada is by using it. So we recommend deploying it in your local environment first,
+        get to know it and then start using it in production.
+        <p/>
+        If you want to know more about concepts not covered in this tutorial, please go to our
+        <a href="/docs">guides</a> section.
+        <p/>
+        Also remember that you can always look up Armada command syntax with
+        <span class="inline-command">armada -h</span>.
+
+        <p/>
+        Fair Winds!
+</div>

@@ -1,0 +1,90 @@
+body {
+  background-color: #fff;
+}
+
+.wrap-container {
+  @include outer-container;
+  padding: 10px;
+  max-width: 100%;
+}
+
+.centered-content {
+  @include fill-parent;
+  @include clearfix;
+  text-align: center;
+}
+
+.body-content-container {
+  margin-bottom: 1em;
+  padding-top: 1em;
+  position: relative;
+  top: 100px;
+  width: 1300px;
+
+
+  @include media($medium-screen-up) {
+    padding-top: 4em;
+    margin-bottom: 4em;
+  }
+}
+
+.sidebar-container {
+  position:relative;
+  overflow:hidden;
+  float: left;
+  height: 100%;
+  width: 100%;
+  word-wrap: break-word;
+
+  @include media($medium-screen-up) {
+    width: $medium-sidebar-width;
+  }
+
+  @include media($large-screen-up) {
+    width: $large-sidebar-width;
+  }
+
+  @include media($larger-screen-up) {
+    width: $larger-sidebar-width;
+  }
+}
+
+.main {
+  @include media($medium-screen-up) {
+    float: right;
+    width: $medium-main-content-width;
+
+    &.stuck {
+      margin-left: $medium-sidebar-width;
+    }
+  }
+
+  @include media($large-screen-up) {
+    width: $large-main-content-width;
+
+    &.stuck {
+      margin-left: $large-sidebar-width;
+    }
+  }
+
+  @include media($larger-screen-up) {
+    width: $larger-main-content-width;
+
+    &.stuck {
+      margin-left: $larger-sidebar-width;
+    }
+  }
+
+  h1 {
+    padding-bottom: 0.35em;
+    margin-bottom: 0.35em;
+  }
+
+  ol {
+    @extend %default-ol;
+  }
+
+  ul {
+    @extend %default-ul;
+  }
+}
