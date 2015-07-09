@@ -1,17 +1,14 @@
-.content
-{
+.content {
     width: 800px;
     padding: 5px 15px;
     margin: 0 auto;
 }
 
-.content a
-{
+.content a {
     color: #12AAEB;
 }
 
-.content a:hover
-{
+.content a:hover {
     color: #192b3c;
 }
 
@@ -19,8 +16,7 @@ p {
     padding: 5px 0;
 }
 
-div.code
-{
+div.code {
     color: white;
     font-family: consolas, courier;
     margin: 0px 30px;
@@ -30,23 +26,19 @@ div.code
     border-radius: 5px;
     position: relative;
 }
-div.code.other
-{
+div.code.other {
     background-color: #3030a0;
 }
-div.code .command
-{
+div.code .command {
     font-weight: bold;
     margin: 1px 0px;
     font-size: 12pt;
 }
-div.code .command.bigger
-{
+div.code .command.bigger {
     font-size: 14pt;
 }
 
-div.code .command-result
-{
+div.code .command-result {
     margin-bottom: -10px;
     white-space: pre;
     margin-top: -20px;
@@ -55,8 +47,7 @@ div.code .command-result
     word-break: break-all;
     white-space: pre-wrap;
 }
-div.code .host-info
-{
+div.code .host-info {
     position: absolute;
     right: 0px;
     top: 0px;
@@ -68,8 +59,7 @@ div.code .host-info
     padding: 2px 5px;
 }
 
-div.info-box
-{
+div.info-box {
     color: black;
     margin: 0px 30px;
     padding: 15px;
@@ -81,15 +71,13 @@ div.info-box
     position: relative;
 }
 
-.info-box.warning-box
-{
+.info-box.warning-box {
     margin: 20px;
     border-color: #f23030;
     background-color: #f2dede;
 }
 
-span.inline-command, span.inline-name
-{
+span.inline-command, span.inline-name {
     font-family: consolas, courier;
     font-weight: bold;
     background-color: #f5f5f5;
@@ -109,11 +97,11 @@ ul.text {
 
 
 
-@media screen and (max-width : 768px)
-{
+@media screen and (max-width : 768px) {
     div.code {
         font-size: 8pt;
         margin: 0px;
+        word-wrap: break-word;
     }
 
     div.code .command {
