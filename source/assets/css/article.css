@@ -40,6 +40,11 @@ div.code .command
     margin: 1px 0px;
     font-size: 12pt;
 }
+div.code .command.bigger
+{
+    font-size: 14pt;
+}
+
 div.code .command-result
 {
     margin-bottom: -10px;
@@ -76,6 +81,13 @@ div.info-box
     position: relative;
 }
 
+.info-box.warning-box
+{
+    margin: 20px;
+    border-color: #f23030;
+    background-color: #f2dede;
+}
+
 span.inline-command, span.inline-name
 {
     font-family: consolas, courier;
@@ -93,4 +105,38 @@ h4 {
 
 ul.text {
     font-size: 16px;
+}
+
+
+
+@media screen and (max-width : 768px)
+{
+    div.code {
+        font-size: 8pt;
+        margin: 0px;
+    }
+
+    div.code .command {
+        font-size: 10pt;
+    }
+    div.code .command.bigger {
+        font-size: 10pt;
+    }
+
+    .content {
+        width: 100%;
+        padding: 15px 5px;
+    }
+
+    .info-box {
+        margin: 10px 0px;
+    }
+    .info-box.warning-box {
+        margin: 10px 0px;
+    }
+
+    .toc-block-container {
+        display: block;
+        width: 100%;
+    }
 }
