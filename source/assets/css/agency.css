@@ -14,7 +14,7 @@ body {
 }
 
 .text-primary {
-    color: #fed136;
+    color: #12aaeb;
 }
 
 p {
@@ -96,7 +96,7 @@ h6 {
 .btn-primary:active,
 .btn-primary.active,
 .open .dropdown-toggle.btn-primary {
-    border-color: #f6bf01;
+    border-color: #56cafc;
     color: #fff;
     background-color: #fec503;
 }
@@ -122,8 +122,8 @@ fieldset[disabled] .btn-primary:active,
 .btn-primary.disabled.active,
 .btn-primary[disabled].active,
 fieldset[disabled] .btn-primary.active {
-    border-color: #fed136;
-    background-color: #fed136;
+    border-color: #12aaeb;
+    background-color: #12aaeb;
 }
 
 .btn-primary .badge {
@@ -224,8 +224,8 @@ fieldset[disabled] .btn-xl.active {
 }
 
 .navbar-default .navbar-toggle {
-    border-color: #fed136;
-    background-color: #fed136;
+    border-color: #56cafc;
+    background-color: #12aaeb;
 }
 
 .navbar-default .navbar-toggle .icon-bar {
@@ -235,6 +235,11 @@ fieldset[disabled] .btn-xl.active {
 .navbar-default .navbar-toggle:hover,
 .navbar-default .navbar-toggle:focus {
     background-color: #fff;
+}
+
+.navbar-default .navbar-toggle:hover .icon-bar,
+.navbar-default .navbar-toggle:focus .icon-bar {
+    background-color: #56cafc;
 }
 
 .navbar-default .nav li a {
