@@ -131,7 +131,7 @@
             <p/>
             <div style="margin-top: -10px; margin-bottom: -10px;">
             Why can't we just insert
-            <span class="inline-name">RUN cd /opt/coffee-counter/src && python coffee-counter.py 80</span>
+            <span class="inline-name">RUN cd /opt/coffee-counter/src &amp;&amp; python coffee-counter.py 80</span>
             in the Dockerfile?
             That's because in the process of building our image, docker executes every
             <span class="inline-name">RUN</span> command, but in the end it saves only the resulting
