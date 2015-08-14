@@ -28,27 +28,6 @@
             <div class="command">$ bash &lt;(curl -sL http://armada.sh/install)</div>
         </div>
 
-            <div class="info-box warning-box">
-                <p>
-                Currently there is a problem with downloading docker images from Armada repositories using Docker 1.7.0.
-                <br/>
-                If you want to run Armada, you'd have to temporarily downgrade Docker, e.g.:
-                </p>
-                <div class="code">
-                Ubuntu:
-                <div class="command">$ sudo apt-get install -y lxc-docker-1.6.0</div>
-                <br/>
-                CentOS:
-                <div class="command">$ curl -sSL -O https://get.docker.com/builds/Linux/x86_64/docker-1.6.0</div>
-                <div class="command">$ chmod +x docker-1.6.0 &amp;&amp; sudo mv docker-1.6.0 /usr/bin/docker</div>
-                <div class="command">$ sudo service docker restart</div>
-                </div>
-                <br/>
-                <p>
-                This step is not necessary if you are using Armada's Vagrant box which includes Docker 1.6.0.
-                </p>
-            </div>
-
         <br/>
 
         <p/>
