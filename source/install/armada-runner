@@ -102,7 +102,7 @@ case "$1" in
 
         set_external_ip
 
-        docker_start_timestamp=$(python -c "import os; print(int(os.path.getctime('/proc/$(pidof docker)')))")
+        docker_start_timestamp=$(python -c "import os; print(int(os.path.getctime('/proc/$(cat /var/run/docker.pid)')))")
 
         docker run -d \
             --privileged=true \
