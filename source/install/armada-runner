@@ -102,7 +102,7 @@ case "$1" in
 
         set_external_ip
 
-        # In background there might some long running Docker process while Armada starts, so we take earliest start time of all docker processes
+        # We take earliest start time of all docker processes
         docker_start_timestamp=$(python -c "import os; print(min(map(lambda x: int(os.path.getctime('/proc/' + x)),'$(pidof docker)'.split())))")
 
         docker run -d \
