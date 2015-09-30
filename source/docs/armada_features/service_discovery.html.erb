@@ -1,0 +1,74 @@
+<link type="text/css" rel="stylesheet" href="/assets/css/article.css"/>
+<div class="content">
+    <h3>Service Discovery.</h3>
+
+    <p/>
+    Service discovery allows you to specify dependencies between two or more services, without hardcoding their
+    addresses and ports. Let's say we have two services:
+    <ul class="text">
+        <li>
+        <span class="inline-name">scores-backend</span> which provides REST API on port 80 inside the container (exposed to 32868 outside the container)
+        </li>
+         <li>
+        <span class="inline-name">scores-frontend</span> which displays data provided by <span class="inline-name">scores-backend</span> API.
+        </li>
+    </ul>
+
+    <div class="code">
+        <div class="command">$ armada list</div>
+        <div class="command-result">
+Name            Address             ID              Status      Tags
+armada          192.168.3.141:49153 ae148a2d3a1a    passing     -
+scores-backend  192.168.3.91:32868  e93f803bbea8    passing     ['env:dev']
+scores-frontend 192.168.3.91:32870  7f50c2d2f285    passing     ['env:dev']
+        </div>
+    </div>
+
+    <h4>Without service disovery</h4>
+    In this case, our <span class="inline-name">scores-frontend</span> service would have to know on which address and port can it find <span class="inline-name">scores-backend</span>.
+    We can hardcode it, but this is not a good practice. What happens when a backend service port changes?
+    You can always run this service on the same port, but what happens if this port is used by another service?
+    You'd have to change your configuration.
+    As number of services grow, you have to remember which service runs on which port, as well as keep it well documented.
+
+    <h4>With service discovery</h4>
+    Armada offers solution to this problem. In our <span class="inline-name">scores-frontend</span> code, we can simply add one entry to our supervisor
+    configuration.
+    <div class="code" style="background-color: #f1f0f0;">
+        <div class="host-info" style="background-color: #444444;">
+            scores_frontend.conf
+        </div>
+
+        <div class="command-result" style="color: #000000;">
+[<span style='color:#400000; font-weight:bold;'>program</span>:require_scores_backend]
+<span style='color:#400000; font-weight:bold;'>directory</span>=/opt/microservice/src/local_magellan
+<span style='color:#400000; font-weight:bold;'>command</span>=python require_service.py 2000 scores-backend
+        </div>
+    </div>
+    require_service.py finds an armada service with <span class="inline-name">scores-backend</span> name and 'dev' env,
+    then maps it's address to <span class="inline-name">localhost:2000</span> inside the container.
+    From now on, we can deploy <span class="inline-name">scores-backend</span> on any ship within armada cluster and always use <span class="inline-name">localhost:2000</span> for API requests.
+
+    <h4>Environments</h4>
+    <ul class="text">
+        <li>
+            require_service.py looks for a service with specified name, and matching 'env'.
+            If we run our frontend with <span class="inline-name">dev</span> env, and backend with <span class="inline-name">production</span> env, require_service will not find it.
+        </li>
+        <li>
+            If we run our frontend with <span class="inline-name">dev/legacy/john</span> env, require_service will first try to find service with
+            matching <span class="inline-name">dev/legacy/john</span> env.
+            Should it fail, it will try to find a service with <span class="inline-name">dev/legacy</span> env and finally with <span class="inline-name">dev</span> env. Note that it
+            will not match a service without specified env.
+        </li>
+    </ul>
+    <h4>Load balancing</h4>
+    <ul class="text">
+    <li>
+        If there are two ore more <span class="inline-name">scores-backend</span> services with matching envs, require_service will spread requests
+        between them.
+    </li>
+    <li>
+       In case one of <span class="inline-name">scores-backend</span> services enters <span class="inline-name">critical</span> state it is automatically dropped from load balancer.
+    </li>
+    </ul>
