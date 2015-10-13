@@ -5,7 +5,7 @@ gem 'middleman'
 gem 'middleman-autoprefixer'
 gem 'middleman-livereload'
 
-gem 'middleman-alias'
+gem 'middleman-alias', '0.0.12'
 
 # God knows what, doesn't compile without it
 gem 'kramdown', '1.8.0'
@@ -13,7 +13,7 @@ gem 'kramdown', '1.8.0'
 # Templating Engines
 gem 'redcarpet'
 gem 'builder'
-gem 'sass'
+gem 'sass', '3.4.18'
 gem 'less'
 gem 'therubyracer'
 

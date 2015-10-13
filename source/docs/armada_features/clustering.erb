@@ -1,11 +1,11 @@
 <link type="text/css" rel="stylesheet" href="/assets/css/article.css"/>
 <div class="content">
     <h3>Clustering.</h3>
-    Usually in production environment, we have more than one server. With armada you can simply join them together forming a cluster.
+    Usually in production environment, we have more than one server. With Armada you can simply join them together forming a cluster.
     This allows you to manage services on any ship from any ship within such cluster.
 
-    <h4>Joining ships</h4>
-    Let's say we have two servers running armada services: <span class="inline-name">192.168.3.10</span> and <span class="inline-name">192.168.3.11</span>.
+    <h4>Joining ships.</h4>
+    Let's say we have two servers running Armada services: <span class="inline-name">192.168.3.10</span> and <span class="inline-name">192.168.3.11</span>.
     <br/>
     <div class="code">
     <div class="host-info">Host: 192.168.3.10</div>
@@ -29,7 +29,7 @@ example-2       192.168.3.11:32422  efe0e1ab41e5    passing     ['env:dev']
     </div>
     <p/>
     <br/>
-    We can join them together by with simple <span class="inline-name">armada join</span> command:
+    We can join them together with simple <span class="inline-name">armada join</span> command:
     <div class="code">
     <div class="host-info">Host: 192.168.3.10</div>
     <div class="command">$ armada join 192.168.3.11</div>
@@ -62,9 +62,9 @@ Such configuration should only be used in development environments.
     </div>
     <p/>
     Notice that when forming a cluster, the ship that we joined to is marked as a leader.
-    Another important thing is a displayed warning. We need at least 3 ships to form a recoverable cluster.
+    Another important thing is a displayed warning. We will cover it below.
     <br/><br/>
-    We can can now manage services on any ship. Let's try it!
+    We can now manage services on any ship. Let's try it out!!
     <div class="code">
     <div class="host-info">Host: 192.168.3.10</div>
     <div class="command">$ armada stop example-2</div>
@@ -72,9 +72,9 @@ Such configuration should only be used in development environments.
 Stopping service example-2...
 Service has been stopped.
     </div>
-        <div class="command">$ armada run example -r clustering-example --ship 192.168.3.11 --env dev</div>
+        <div class="command">$ armada run example -r example-clustering --ship 192.168.3.11 --env dev</div>
         <div class="command-result">
-Running microservice clustering-example (renamed from example) from dockyard: dockyard.armada.sh (alias: armada) on remote ship: 192.168.3.11...
+Running microservice example-clustering (renamed from example) from dockyard: dockyard.armada.sh (alias: armada) on remote ship: 192.168.3.11...
 Service is running in container 054546732f69 available at addresses:
 192.168.3.11:32769 (80/tcp)
 192.168.3.11:32768 (22/tcp)
@@ -85,6 +85,22 @@ Name                Address             ID              Status      Tags
 armada              192.168.3.10:8900   ae148a2d3a1a    passing     -
 armada              192.168.3.11:8900   27cc85f15888    passing     -
 example-1           192.168.3.10:32868  e93f803bbea8    passing     ['env:dev']
+
+
 example-clustering  192.168.3.11:32769  054546732f69    passing     ['env:dev']
         </div>
     </div>
+    <p/>
+    <h4>Production environment.</h4>
+    Right now, our cluster has one  <span class="inline-name">leader</span>, one  <span class="inline-name">ship</span> and zero  <span class="inline-name">commanders</span>.
+    There can be only one  <span class="inline-name">leader</span> and multiple  <span class="inline-name">commanders</span>.
+    In case of failure, they are responsible for making recovery decisions based on <a href="https://raft.github.io">Raft Consensus</a>.
+    Because decisions are based on majority, we suggest having at least 2  <span class="inline-name">commanders</span> in addition to  <span class="inline-name">leader</span>.
+    To promote a ship to  <span class="inline-name">commander</span> role
+    run  <span class="inline-name">armada promote</span> command.
+    <h4>Hints.</h4>
+    <ul class="text">
+        <li>To remove a ship from cluster run armada shutdown followed by sudo service armada start</li>
+        <li>If you don't want to use IP addresses as ship names, you can run <span class="inline-name">armada rename {new_name}</span>.
+            Renaming restarts a ship, so do it before joining into a cluster, or after you have formed recoverable cluster.</li>
+    </ul>
