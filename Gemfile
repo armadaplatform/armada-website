@@ -7,6 +7,8 @@ gem 'middleman-livereload'
 
 gem 'middleman-alias' 
 
+gem 'kramdown', '1.8.0'
+
 # Templating Engines
 gem 'redcarpet'
 gem 'builder'
