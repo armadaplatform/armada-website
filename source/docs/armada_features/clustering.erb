@@ -92,15 +92,15 @@ example-clustering  192.168.3.11:32769  054546732f69    passing     ['env:dev']
     </div>
     <p/>
     <h4>Production environment.</h4>
-    Right now, our cluster has one  <span class="inline-name">leader</span>, one  <span class="inline-name">ship</span> and zero  <span class="inline-name">commanders</span>.
-    There can be only one  <span class="inline-name">leader</span> and multiple  <span class="inline-name">commanders</span>.
+    Right now, our cluster has one <span class="inline-name">leader</span>, one <span class="inline-name">ship</span> and zero <span class="inline-name">commanders</span>.
+    There can be only one <span class="inline-name">leader</span> and multiple <span class="inline-name">commanders</span>.
     In case of failure, they are responsible for making recovery decisions based on <a href="https://raft.github.io">Raft Consensus</a>.
-    Because decisions are based on majority, we suggest having at least 2  <span class="inline-name">commanders</span> in addition to  <span class="inline-name">leader</span>.
-    To promote a ship to  <span class="inline-name">commander</span> role
-    run  <span class="inline-name">armada promote</span> command.
+    Because decisions are based on majority, we suggest having at least 2 <span class="inline-name">commanders</span> in addition to <span class="inline-name">leader</span>.
+    To promote a ship to <span class="inline-name">commander</span> role
+    run <span class="inline-name">armada promote</span> command.
     <h4>Hints.</h4>
     <ul class="text">
-        <li>To remove a ship from cluster run armada shutdown followed by sudo service armada start</li>
+        <li>To remove a ship from cluster run <span class="inline-name">armada shutdown</span> followed by <span class="inline-name">sudo service armada start</span></li>
         <li>If you don't want to use IP addresses as ship names, you can run <span class="inline-name">armada rename {new_name}</span>.
             Renaming restarts a ship, so do it before joining into a cluster, or after you have formed recoverable cluster.</li>
     </ul>
