@@ -9,20 +9,20 @@
         As an example we will use Armada's template for Python:
 
         <div class="code">
-            <div class="command">$ armada create microservice_python_template</div>
+            <div class="command">$ armada create uppercase-service -b python</div>
             <div class="command-result">
-Service microservice_python_template has been created in /home/vagrant/microservice_python_template.
+Service uppercase-service has been created in /home/vagrant/uppercase-service from python template.
             </div>
-            <div class="command">$ cd microservice_python_template ; find</div>
+            <div class="command">$ cd uppercase-service ; find</div>
             <div class="command-result">
 .
 ./README.md
 ./Dockerfile
 ./Vagrantfile
 ./supervisor
-./supervisor/_MICROSERVICE_PYTHON_TEMPLATE_.conf
+./supervisor/uppercase-service.conf
 ./src
-./src/_MICROSERVICE_PYTHON_TEMPLATE_.py
+./src/uppercase-service.py
             </div>
         </div>
 
@@ -32,13 +32,13 @@ Service microservice_python_template has been created in /home/vagrant/microserv
         Let's try to add something simple like echoing it's input in uppercase.
 
         <div class="code">
-            <div class="command">~/microservice_python_template$ vim ./src/_MICROSERVICE_PYTHON_TEMPLATE_.py</div>
+            <div class="command">~/uppercase-service$ vim ./src/uppercase-service.py</div>
             <div class="command-result">
 import web
 
-class Health(object):
+class Index(object):
     def GET(self):
-        return 'ok'
+        return 'Service works!'
 
 <font color="yellow">class Shout(object):</font>
 <font color="yellow">    def GET(self, txt):</font>
@@ -47,7 +47,7 @@ class Health(object):
 
 def main():
     urls = (
-        '/health', Health.__name__,
+        '/', Index.__name__,
 <font color="yellow">        '/shout/(.*)', Shout.__name__,</font>
     )
     app = web.application(urls, globals())
@@ -65,7 +65,7 @@ if __name__ == '__main__':
         We can build the service image now.
 
         <div class="code">
-            <div class="command">~/microservice_python_template$ armada build upcase-service</div>
+            <div class="command">~/uppercase-service$ armada build upcase-service</div>
             <div class="command-result">
 Pulling repository dockyard.armada.sh/<font color="yellow">microservice_python</font>
 cae965566422: Pulling dependent layers
@@ -97,7 +97,7 @@ Successfully built c0b134888b7a
         or push it to some other dockyard, so it will be available from every ship.
 
         <div class="code">
-            <div class="command">~/microservice_python_template$ armada push upcase-service</div>
+            <div class="command">~/uppercase-service$ armada push upcase-service</div>
             <div class="command-result">
 Pushing microservice upcase-service to dockyard: 192.168.3.141:10000...
 The push refers to a repository [192.168.3.141:10000/upcase-service] (len: 1)
@@ -108,24 +108,18 @@ Image 511136ea3c5a already pushed, skipping
 f87353915cb3: Image successfully pushed
 Pushing tag for rev [f87353915cb3] on {http://192.168.3.141:10000/v1/repositories/upcase-service/tags/latest}
             </div>
-            <div class="command">~/microservice_python_template$ armada run upcase-service</div>
+            <div class="command">~/uppercase-service$ armada run upcase-service</div>
             <div class="command-result">
 Running microservice upcase-service from dockyard: 192.168.3.141:10000 (alias: myrepo) locally...
 Service is running in container 9707b42a4c77 available at addresses:
   192.168.3.141:49167 (22/tcp)
   192.168.3.141:49168 (80/tcp)
             </div>
-            <div class="command">~/microservice_python_template$ curl http://192.168.3.141:49168/shout/Armada-is-cool!</div>
+            <div class="command">~/uppercase-service$ curl http://192.168.3.141:49168/shout/Armada-is-cool!</div>
             <div class="command-result">
 ARMADA-IS-COOL!
             </div>
         </div>
-
-        <p/>
-        Next, we should probably replace the term <span class="inline-command">_MICROSERVICE_PYTHON_TEMPLATE_</span>
-        in the code with something more meaningful.
-        We could do it also right at the start automatically by running
-        <span class="inline-command">armada create microservice_python_template -n upcase-service</span>.
         <p/>
         Many more fun functionalities can be added later on, but basics of building and running
         new REST services with Armada templates are that easy.
