@@ -113,6 +113,7 @@ case "$1" in
             -p 8300:8300 -p 8301:8301 -p 8301:8301/udp \
             -p 8400:8400 -p 8500:8500 \
             -v /opt/armada:/opt/armada \
+            -v /usr/bin/docker:/usr/bin/docker \
             -v /etc/opt:/etc/opt \
             -v /var/run/docker.sock:/var/run/docker.sock \
             -e SHIP_EXTERNAL_IP=${external_ip} \
