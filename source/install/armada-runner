@@ -88,6 +88,21 @@ stop_armada() {
     rm -f "${ARMADA_LOCK_FILE}" 2>/dev/null
 }
 
+docker_client_version() {
+    echo $(docker version | grep "Client version" | cut -d ' ' -f 3)
+}
+
+get_static_docker_client_if_missing() {
+    if [ ! -d "/opt/armada-docker-client" ]; then
+        mkdir /opt/armada-docker-client
+    fi
+    docker_version=$(docker_client_version)
+    if [ ! -f "/opt/armada-docker-client/docker-$docker_version" ]; then
+        log_message "Fetching static docker client v$docker_version.";
+        curl -sSL https://get.docker.com/builds/Linux/x86_64/docker-$docker_version -o /opt/armada-docker-client/docker-$docker_version
+        chmod +x /opt/armada-docker-client/docker-$docker_version
+    fi
+}
 
 case "$1" in
     start)
@@ -105,6 +120,10 @@ case "$1" in
         # We take earliest start time of all docker processes
         docker_start_timestamp=$(python -c "import os; print(min(map(lambda x: int(os.path.getctime('/proc/' + x)),'$(pidof docker)'.split())))")
 
+        get_static_docker_client_if_missing
+
+        docker_version=$(docker_client_version)
+
         docker run -d \
             --privileged=true \
             --cidfile "${ARMADA_CONTAINERID_FILE}" \
@@ -113,8 +132,8 @@ case "$1" in
             -p 8300:8300 -p 8301:8301 -p 8301:8301/udp \
             -p 8400:8400 -p 8500:8500 \
             -v /opt/armada:/opt/armada \
-            -v /usr/bin/docker:/usr/bin/docker \
             -v /etc/opt:/etc/opt \
+            -v /opt/armada-docker-client/docker-$docker_version:/usr/bin/docker \
             -v /var/run/docker.sock:/var/run/docker.sock \
             -e SHIP_EXTERNAL_IP=${external_ip} \
             -e MICROSERVICE_NAME=armada \
