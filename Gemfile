@@ -7,6 +7,8 @@ gem 'middleman-livereload'
 
 gem 'middleman-alias', '0.0.12'
 
+gem 'mime-types', '2.6.2'
+
 # God knows what, doesn't compile without it
 gem 'kramdown', '1.8.0'
 

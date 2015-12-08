@@ -1,7 +1,7 @@
 FROM microservice_php
 MAINTAINER Cerebro <cerebro@ganymede.eu>
 
-ENV ARMADA_WEBSITE_APT_GET_UPDATE_DATE 2015-07-09
+ENV ARMADA_WEBSITE_APT_GET_UPDATE_DATE 2015-12-07
 
 RUN apt-get update
 RUN apt-get install -y make build-essential g++ ruby-dev nodejs zlib1g-dev zip
