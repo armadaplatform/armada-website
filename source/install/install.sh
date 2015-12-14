@@ -141,6 +141,10 @@ else
     exit 1
 fi
 
+if [ $? != 0 ]; then
+    echo "Warning: If armada daemon failed to start, the 'armada' command will not work."
+fi
+
 hash -r
 
 #===================================================================================================
