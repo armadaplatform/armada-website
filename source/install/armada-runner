@@ -118,7 +118,7 @@ case "$1" in
         set_external_ip
 
         # We take earliest start time of all docker processes
-        docker_start_timestamp=$(python -c "import os; print(min(map(lambda x: int(os.path.getctime('/proc/' + x)),'$(pidof docker)'.split())))")
+        docker_start_timestamp=$(python2 -c "import os; print(min(map(lambda x: int(os.path.getctime('/proc/' + x)),'$(pidof docker)'.split())))")
 
         get_static_docker_client_if_missing
 
