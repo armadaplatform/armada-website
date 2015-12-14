@@ -29,7 +29,7 @@ set_external_ip() {
             default_interface=eth1
         fi
     fi
-    external_ip=`ifconfig ${default_interface} | grep 'inet' | awk '{print $2}' | head -1`
+    external_ip=`ifconfig ${default_interface} | grep 'inet ' | awk '{print $2}' | cut -d: -f2 | head -1`
 }
 
 # Check if docker is present and available.
