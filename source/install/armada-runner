@@ -89,7 +89,7 @@ stop_armada() {
 }
 
 docker_server_version() {
-    echo $(docker version | grep "Server version" | cut -d ' ' -f 3)
+    echo $(docker version | grep -i server -A1 | grep -i version | head -n1 | cut -d: -f2)
 }
 
 get_static_docker_client_if_missing() {
