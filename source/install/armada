@@ -2,4 +2,4 @@
 
 export PYTHONPATH="/opt/armada:${PYTHONPATH}"
 
-python -m armada_command.armada $@
+python2 -m armada_command.armada $@
