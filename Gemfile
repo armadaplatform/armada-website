@@ -8,6 +8,7 @@ gem 'middleman-livereload'
 gem 'middleman-alias', '0.0.12'
 
 gem 'mime-types', '2.6.2'
+gem 'autoprefixer-rails', '6.0.3'
 
 # God knows what, doesn't compile without it
 gem 'kramdown', '1.8.0'
