@@ -40,6 +40,15 @@ start_using_systemd() {
     $sh_c "systemctl restart armada.service"
 }
 
+start_using_openrc() {
+    download_file ${ARMADA_BASE_URL}openrc_armada /tmp/openrc_armada
+    download_file ${ARMADA_BASE_URL}armada-runner /tmp/armada-runner
+    $sh_c "mv -f /tmp/openrc_armada /etc/init.d/armada"
+    $sh_c "mv -f /tmp/armada-runner /usr/local/bin/armada-runner"
+    $sh_c "chmod +x /etc/init.d/armada /usr/local/bin/armada-runner"
+    $sh_c "rc-update add armada default"
+}
+
 case "$(uname -m)" in
     *64)
         ;;
@@ -142,9 +151,11 @@ $sh_c "docker tag -f ${ARMADA_REPOSITORY}/armada armada"
 if command_exists update-rc.d || command_exists chkconfig; then
     start_using_initd
 elif command_exists systemctl; then
-    start_using_systemd;
+    start_using_systemd
+elif command_exists rc-status; then
+    start_using_openrc
 else
-    echo "No initd or systemd installed."
+    echo "No initd, systemd, or openrc installed."
     exit 1
 fi
 

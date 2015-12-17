@@ -1,0 +1,16 @@
+#!/sbin/runscript
+
+name='armada'
+
+depend() {
+        after docker
+        need docker
+}
+
+start() {
+        /usr/local/bin/armada-runner start
+}
+
+stop() {
+        /usr/local/bin/armada-runner stop
+}
