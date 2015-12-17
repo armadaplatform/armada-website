@@ -111,8 +111,16 @@ else
         $sh_c "yum install -y python python-pip conntrack-tools net-tools"
     fi
 fi
-if command_exists pip; then
-    $sh_c "pip install -U requests 2>/dev/null"
+
+if command_exists pip2; then
+        pip='pip2'
+else
+    if command_exists pip; then
+        pip='pip'
+    fi
+fi
+if $pip; then
+    $sh_c "$pip install -U requests 2>/dev/null"
 
     # Hack for broken pip on Ubuntu after installing requests.
     if command_exists apt-get; then
