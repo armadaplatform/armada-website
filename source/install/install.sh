@@ -114,12 +114,11 @@ fi
 
 if command_exists pip2; then
         pip='pip2'
-else
-    if command_exists pip; then
+elif command_exists pip; then
         pip='pip'
-    fi
 fi
-if $pip; then
+
+if [ -n "$pip" ]; then
     $sh_c "$pip install -U requests 2>/dev/null"
 
     # Hack for broken pip on Ubuntu after installing requests.
