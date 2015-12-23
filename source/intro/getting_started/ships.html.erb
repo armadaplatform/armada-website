@@ -78,9 +78,29 @@ Such configuration should only be used in development environments.
 
 
         <h4>Running services on remote ships</h4>
+        <p>
+        We'll demonstrate how easy it is to run services on another ship.
+        </p>
+
+        <p>
+        First, because our dockyard is available only by non-secure HTTP protocol, we have to add
+        it to Docker's insecure registry list on the remote ship:
         <p/>
+
+        <div class="code other">
+            <div class="host-info">
+                Host: behemot
+            </div>
+            <div class="command">&nbsp;</div>
+            <div class="command">$ echo DOCKER_OPTS=\"\$DOCKER_OPTS --insecure-registry 192.168.3.141:10000\" | sudo tee --append /etc/default/docker</div>
+            <div class="command">$ sudo service docker restart</div>
+            <div class="command">$ sudo service armada restart</div>
+        </div>
+
+        <p>
         Let's go back to our first ship now.
-        We'll demonstrate how easy it is to run service on another ship:
+        </p>
+
         <div class="code">
             <div class="command">$ armada run upcase-service --ship 192.168.3.177</div>
             <div class="command-result">
@@ -140,28 +160,9 @@ Such configuration should only be used in development environments.
         to run the service on that remote ship without having to remember its IP address.
 
 
-        <h4>Insecure dockyards</h4>
-        <p/>
-        In reality there would be one more step required to be able to run the service from our own registry
-        on the remote ship. Because our dockyard is available only by non-secure HTTP protocol, we'd have
-        to add it to Docker's insecure registries list on the remote ship as well.
-        <p/>
-        To do it, it is enough to execute the same 3 commands that were shown in previous chapter.
-
-        <div class="code other">
-            <div class="host-info">
-                Host: behemot
-            </div>
-            <div class="command">&nbsp;</div>
-            <div class="command">$ echo DOCKER_OPTS=\"\$DOCKER_OPTS --insecure-registry 192.168.3.141:10000\" | sudo tee --append /etc/default/docker</div>
-            <div class="command">$ sudo service docker restart</div>
-            <div class="command">$ sudo service armada restart</div>
-        </div>
-
-
         <h4>Other remote commands</h4>
         <p/>
-        Few other Armada commands such as <span class="inline-command">armada stop</span>,
+        A few other Armada commands such as <span class="inline-command">armada stop</span>,
         <span class="inline-command">armada restart</span> and <span class="inline-command">armada ssh</span>
         also work on remote ships.
 
