@@ -68,7 +68,7 @@ fi
 
 if ! command_exists docker; then
     echo >&2 '"armada" requires docker to be installed first. Try installing it with:'
-    echo >&2 '    curl -sL https://get.docker.io/ | sh'
+    echo >&2 '    curl -sL https://get.docker.com/ | sh'
     exit 1
 fi
 
@@ -120,15 +120,6 @@ fi
 
 if [ -n "$pip" ]; then
     $sh_c "$pip install -U requests 2>/dev/null"
-
-    # Hack for broken pip on Ubuntu after installing requests.
-    if command_exists apt-get; then
-        $sh_c "apt-get remove -y python-pip"
-        $sh_c "apt-get autoremove -y"
-        $sh_c "apt-get install -y curl"
-        $sh_c "curl -ksLO https://raw.github.com/pypa/pip/master/contrib/get-pip.py"
-        $sh_c "python get-pip.py && rm -f get-pip.py && ln -s /usr/local/bin/pip /usr/bin/pip"
-    fi
 fi
 
 download_file ${ARMADA_BASE_URL}armada /tmp/armada
