@@ -1,5 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env python2
+import sys
+sys.path.append('/opt/armada')
+from armada_command import armada
 
-export PYTHONPATH="/opt/armada:${PYTHONPATH}"
-
-python2 -m armada_command.armada $@
+armada.main()
