@@ -112,15 +112,12 @@ else
     fi
 fi
 
+pip='pip'
 if command_exists pip2; then
         pip='pip2'
-elif command_exists pip; then
-        pip='pip'
 fi
 
-if [ -n "$pip" ]; then
-    $sh_c "$pip install -U requests 2>/dev/null"
-fi
+$sh_c "$pip install -U requests 2>/dev/null"
 
 download_file ${ARMADA_BASE_URL}armada /tmp/armada
 $sh_c "mv -f /tmp/armada /usr/local/bin/armada"
