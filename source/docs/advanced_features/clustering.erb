@@ -1,10 +1,12 @@
 <link type="text/css" rel="stylesheet" href="/assets/css/article.css"/>
 <div class="content">
     <h3>Clustering.</h3>
+    <p/>
     Usually in production environment, we have more than one server. With Armada you can simply join them together forming a cluster.
     This allows you to manage services on any ship from any ship within such cluster.
 
     <h4>Joining ships.</h4>
+    <p/>
     Let's say we have two servers running Armada services: <span class="inline-name">192.168.3.10</span> and <span class="inline-name">192.168.3.11</span>.
     <br/>
     <div class="code">
@@ -92,6 +94,7 @@ example-clustering  192.168.3.11:32769  054546732f69    passing     ['env:dev']
     </div>
     <p/>
     <h4>Production environment.</h4>
+    <p/>
     Right now, our cluster has one <span class="inline-name">leader</span>, one <span class="inline-name">ship</span> and zero <span class="inline-name">commanders</span>.
     There can be only one <span class="inline-name">leader</span> and multiple <span class="inline-name">commanders</span>.
     In case of failure, they are responsible for making recovery decisions based on <a href="https://raft.github.io">Raft Consensus</a>.

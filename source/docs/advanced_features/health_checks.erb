@@ -1,0 +1,51 @@
+<link type="text/css" rel="stylesheet" href="/assets/css/article.css"/>
+<div class="content">
+    <h3>Health-checks.</h3>
+    <p/>
+    Health-checks are simple scripts which provide knowledge about what's going on inside of our service. They are running inside the service's container
+    and report it's status to Armada agent. You can see it in 'Status' column of <span class="inline-name">armada list</span> command.
+
+    <ul class="text">
+        <li>
+        <span class="inline-name">passing</span> - everything works!
+        </li>
+         <li>
+        <span class="inline-name">warning</span> - service works, but there's something wrong with it. (e.g.: a lot of errors being logged)
+        </li>
+         <li>
+        <span class="inline-name">critical</span> - service doesn't work! Armada won't use it's address in any load-balancer until the status changes back to <span class="inline-name">passing</span> or <span class="inline-name">warning</span>.
+        </li>
+    </ul>
+
+    <h4>Default health-check</h4>
+    <p/>
+    Every service based on <span class="inline-name">microservice</span> image has a default health-check which checks whether port 80 inside the container is open.
+    If it is, we assume the service works and return '<span class="inline-name">passing</span>' status. Otherwise '<span class="inline-name">critical</span>' is returned.
+    You can disable it in Dockerfile with one line:
+    <br/><span class="inline-name">RUN rm -f /opt/microservice/health-checks"</span>
+
+
+    <h4>Custom health-checks</h4>
+    <p/>
+    In order to add a health-check to your service, simply create health-checks directory in your project and add your health-checks there. There are some things you should know:
+    <ul class="text">
+        <li>
+        <span class="inline-name">shebangs</span> - Since you can write your health check in any language you want,
+            remember to add a shebang to let a system know how to run your script.
+            For example for python health-check you'd add <span class="inline-name">#!/usr/bin/env python</span>.
+
+        </li>
+         <li>
+        <span class="inline-name">exit codes</span> - Health-checks report their status by exiting with an integer code. 0 means <span class="inline-name">passing</span>, 1 means <span class="inline-name">warning</span> and 2 means <span class="inline-name">critical</span>.
+        </li>
+         <li>
+        <span class="inline-name">the worst outcome</span> - Each health-check script can return a different status. Final service's status is "the worst" of all statuses.
+             So if you have 10 health checks, 9 of them exit with code 0 (<span class="inline-name">passing</span>),
+             and one exits with code 2 (<span class="inline-name">critical</span>) your service's final status will be <span class="inline-name">critical</span>.
+        </li>
+    </ul>
+
+    <h4>Example</h4>
+    <p/>
+    Instead of providing some dummy example, we suggest you check out <a href="https://github.com/armadaplatform/mysql">armada mysql repository</a>
+    to see how custom health-checks can be used in real life.
