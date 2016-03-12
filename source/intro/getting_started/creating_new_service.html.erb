@@ -88,8 +88,8 @@ Successfully built c0b134888b7a
         on which our template is based.
         This in turn is based on image <span class="inline-command">microservice</span>
         which is our recommended base docker image for microservices run on Armada.
-        It contains some useful features such as autoregistering service in Armada catalog, built-in
-        <span class="inline-command">sshd</span> and some other service discovery goodies.
+        It contains some useful features such as autoregistering service in Armada catalog,
+        and some other service discovery goodies.
 
         <p/>
         Now, we can test our new service by running it from local dockyard
@@ -112,7 +112,6 @@ Pushing tag for rev [f87353915cb3] on {http://192.168.3.141:10000/v1/repositorie
             <div class="command-result">
 Running microservice upcase-service from dockyard: 192.168.3.141:10000 (alias: myrepo) locally...
 Service is running in container 9707b42a4c77 available at addresses:
-  192.168.3.141:49167 (22/tcp)
   192.168.3.141:49168 (80/tcp)
             </div>
             <div class="command">~/uppercase-service$ curl http://192.168.3.141:49168/shout/Armada-is-cool!</div>
