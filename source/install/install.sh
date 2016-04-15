@@ -103,21 +103,35 @@ download_file()
 
 echo "Installing armada..."
 
+COMMON_REQUIRED_PACKAGES='python'
+YUM_REQUIRED_PACKAGES='conntrack-tools net-tools'
+APT_REQUIRED_PACKAGES='conntrack'
+
+POSSIBLE_PIP_COMMANDS=( 'pip2.7' 'pip-2.7' 'pip2' 'pip' )
+for PIP_COMMAND in "${POSSIBLE_PIP_COMMANDS[@]}"
+do
+    if command_exists "${PIP_COMMAND}"; then
+        pip="${PIP_COMMAND}"
+        break
+    fi
+done
+
+if [ -z "${pip}" ]; then
+    pip='pip'
+    COMMON_REQUIRED_PACKAGES="${COMMON_REQUIRED_PACKAGES} python-pip "
+fi
+
+
 if command_exists apt-get; then
-    $sh_c "apt-get install -y python python-pip conntrack"
+    $sh_c "apt-get install -y ${COMMON_REQUIRED_PACKAGES} ${APT_REQUIRED_PACKAGES}"
 else
     if command_exists yum; then
         $sh_c "yum install -y epel-release"
-        $sh_c "yum install -y python python-pip conntrack-tools net-tools"
+        $sh_c "yum install -y ${COMMON_REQUIRED_PACKAGES} ${YUM_REQUIRED_PACKAGES}"
     fi
 fi
 
-pip='pip'
-if command_exists pip2; then
-        pip='pip2'
-fi
-
-$sh_c "$pip install -U requests 2>/dev/null"
+$sh_c "$pip install -U requests>=2.9.1 2>/dev/null"
 
 download_file ${ARMADA_BASE_URL}armada /tmp/armada
 $sh_c "mv -f /tmp/armada /usr/local/bin/armada"
