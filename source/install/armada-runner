@@ -135,6 +135,7 @@ case "$1" in
             -v /etc/opt:/etc/opt \
             -v /opt/armada-docker-client/docker-$docker_version:/usr/bin/docker \
             -v /var/run/docker.sock:/var/run/docker.sock \
+            -v /:/ship_root_dir:ro \
             -e SHIP_EXTERNAL_IP=${external_ip} \
             -e MICROSERVICE_NAME=armada \
             -e DOCKER_START_TIMESTAMP=${docker_start_timestamp} \
