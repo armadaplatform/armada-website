@@ -65,7 +65,7 @@ wait_for_armada_running() {
     is_armada_running=0
     while [ ${is_armada_running} != "1" ] && [ ${wait_timeout} -gt 0 ]; do
         sleep 1
-        is_armada_running=`armada info 2>/dev/null | grep passing | awk '{split($3,a,":"); print a[1]}' | grep "^${external_ip}$" | wc -l`
+        is_armada_running=$(armada info 2>/dev/null | grep passing | awk '{split($3,a,":"); print a[1]}' | grep "^${external_ip}$" | wc -l)
         wait_timeout=$[wait_timeout - 1]
     done
 
@@ -79,7 +79,7 @@ wait_for_armada_running() {
 }
 
 stop_armada() {
-    armada_containerid=`cat "${ARMADA_CONTAINERID_FILE}" 2>/dev/null`
+    armada_containerid=$(cat "${ARMADA_CONTAINERID_FILE}" 2>/dev/null)
     [ -n "${armada_containerid}" ] \
         && docker inspect ${armada_containerid} > /dev/null 2>&1 \
         && armada shutdown \
@@ -135,6 +135,7 @@ case "$1" in
             -v /etc/opt:/etc/opt \
             -v /opt/armada-docker-client/docker-$docker_version:/usr/bin/docker \
             -v /var/run/docker.sock:/var/run/docker.sock \
+            -v /:/ship_root_dir:ro \
             -e SHIP_EXTERNAL_IP=${external_ip} \
             -e MICROSERVICE_NAME=armada \
             -e DOCKER_START_TIMESTAMP=${docker_start_timestamp} \
