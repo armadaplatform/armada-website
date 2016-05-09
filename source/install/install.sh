@@ -17,7 +17,7 @@ fetch_latest_tag() {
     if command_exists curl; then
         response=$(curl -qSfs ${latest_tag_url}) 2>/dev/null
     elif command_exists wget; then
-        response=$(wget -S -q -O - ${latest_tag_url})
+        response=$(wget -q -O - ${latest_tag_url})
     fi
 
     return_code=$?
