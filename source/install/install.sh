@@ -27,8 +27,11 @@ fetch_latest_tag() {
     fi
 
     regex='"tag_name": "([^"]+)"'
-    [[ $response =~ $regex ]]
-    latest_tag=${BASH_REMATCH[1]}
+    if ! [[ $response =~ $regex ]]; then
+        echo 1>&2 "Invalid response format"
+        return 1
+    fi
+    echo ${BASH_REMATCH[1]}
 }
 
 download_file()
@@ -52,11 +55,12 @@ download_file()
 }
 
 sh_c='sh -c'
-fetch_latest_tag
+latest_tag=$(fetch_latest_tag)
 if [ $? = 0 ]; then
     installation_file_url="https://raw.githubusercontent.com/armadaplatform/armada/${latest_tag}/install/install.sh"
     echo "Downloading installation script (ver. ${latest_tag})."
     download_file ${installation_file_url} /tmp/install_armada.sh
     ${sh_c} "chmod u+x /tmp/install_armada.sh"
     /tmp/install_armada.sh ${latest_tag}
+    rm -f /tmp/install_armada.sh
 fi
