@@ -11,3 +11,4 @@ bin
 build
 Gemfile.lock
 .idea/
+.vagrant/
