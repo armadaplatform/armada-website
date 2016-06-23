@@ -18,10 +18,10 @@
     </ul>
 
     <h4>Default health-check</h4>
-    <p/>
+    <p>
     Every service based on <span class="inline-name">microservice</span> image has a default health-check which checks whether port 80 inside the container is open.
     If it is, we assume the service works and return '<span class="inline-name">passing</span>' status. Otherwise '<span class="inline-name">critical</span>' is returned.
-    You can disable it in Dockerfile with one line:
+    You can disable it in Dockerfile with one line:</p>
     <br/><span class="inline-name">RUN rm -rf /opt/microservice/health-checks</span>
 
 

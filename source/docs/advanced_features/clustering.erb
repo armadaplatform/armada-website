@@ -1,13 +1,11 @@
 <link type="text/css" rel="stylesheet" href="/assets/css/article.css"/>
 <div class="content">
     <h3>Clustering.</h3>
-    <p/>
-    Usually in production environment, we have more than one server. With Armada you can simply join them together forming a cluster.
-    This allows you to manage services on any ship from any ship within such cluster.
+    <p>Usually in production environment, we have more than one server. With Armada you can simply join them together forming a cluster.
+    This allows you to manage services on any ship from any ship within such cluster.</p>
 
     <h4>Joining ships.</h4>
-    <p/>
-    Let's say we have two servers running Armada services: <span class="inline-name">192.168.3.10</span> and <span class="inline-name">192.168.3.11</span>.
+    <p>Let's say we have two servers running Armada services: <span class="inline-name">192.168.3.10</span> and <span class="inline-name">192.168.3.11</span>.</p>
     <br/>
     <div class="code">
     <div class="host-info">Host: 192.168.3.10</div>
@@ -29,9 +27,9 @@ armada          192.168.3.11:8900   27cc85f15888    passing     -
 example-2       192.168.3.11:32422  efe0e1ab41e5    passing     ['env:dev']
     </div>
     </div>
-    <p/>
+
     <br/>
-    We can join them together with simple <span class="inline-name">armada join</span> command:
+    <p>We can join them together with simple <span class="inline-name">armada join</span> command:</p>
     <div class="code">
     <div class="host-info">Host: 192.168.3.10</div>
     <div class="command">$ armada join 192.168.3.11</div>
@@ -48,8 +46,7 @@ example-2       192.168.3.11:32422  efe0e1ab41e5    passing     ['env:dev']
     </div>
     </div>
     <br/>
-    <p/>
-    <span class="inline-name">armada info</span> command displays core information about our cluster.
+    <p><span class="inline-name">armada info</span> command displays core information about our cluster.</p>
     <div class="code">
         <div class="host-info">Host: 192.168.3.10</div>
         <div class="command">$ armada info</div>
@@ -62,11 +59,11 @@ WARNING: We cannot survive leader leaving/failure.
 Such configuration should only be used in development environments.
         </div>
     </div>
-    <p/>
+    <p>
     Notice that when forming a cluster, the ship that we joined to is marked as a leader.
-    Another important thing is a displayed warning. We will cover it below.
+    Another important thing is a displayed warning. We will cover it below.</p>
     <br/><br/>
-    We can now manage services on any ship. Let's try it out!!
+    <p>We can now manage services on any ship. Let's try it out!!</p>
     <div class="code">
     <div class="host-info">Host: 192.168.3.10</div>
     <div class="command">$ armada stop example-2</div>
@@ -86,20 +83,17 @@ Name                Address             ID              Status      Tags
 armada              192.168.3.10:8900   ae148a2d3a1a    passing     -
 armada              192.168.3.11:8900   27cc85f15888    passing     -
 example-1           192.168.3.10:32868  e93f803bbea8    passing     ['env:dev']
-
-
 example-clustering  192.168.3.11:32769  054546732f69    passing     ['env:dev']
         </div>
     </div>
-    <p/>
+
     <h4>Production environment.</h4>
-    <p/>
-    Right now, our cluster has one <span class="inline-name">leader</span>, one <span class="inline-name">ship</span> and zero <span class="inline-name">commanders</span>.
+
+    <p>Right now, our cluster has one <span class="inline-name">leader</span>, one <span class="inline-name">ship</span> and zero <span class="inline-name">commanders</span>.
     There can be only one <span class="inline-name">leader</span> and multiple <span class="inline-name">commanders</span>.
     In case of failure, they are responsible for making recovery decisions based on <a href="https://raft.github.io">Raft Consensus</a>.
     Because decisions are based on majority, we suggest having at least 2 <span class="inline-name">commanders</span> in addition to <span class="inline-name">leader</span>.
-    To promote a ship to <span class="inline-name">commander</span> role
-    run <span class="inline-name">armada promote</span> command.
+    To promote a ship to <span class="inline-name">commander</span> role run <span class="inline-name">armada promote</span> command.</p>
     <h4>Hints.</h4>
     <ul class="text">
         <li>To remove a ship from cluster run <span class="inline-name">armada shutdown</span> followed by <span class="inline-name">sudo service armada start</span></li>
