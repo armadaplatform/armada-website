@@ -12,14 +12,12 @@
 Running microservice example from dockyard: dockyard.armada.sh (alias: armada) locally...
 Service is running in container 789731dc0ca4 available at addresses:
   192.168.3.141:49156 (80/tcp)
-  192.168.3.141:49155 (22/tcp)
             </div>
         </div>
 
 
         <p/>
-        First address is main service endpoint (mapping to port 80 inside service container).
-        Second address will allow us to ssh inside service container. We'll cover this topic later on.
+        Listed address is main service endpoint (mapping to port 80 inside service container).
 
         So, let's check what our service can do:
 
@@ -62,7 +60,6 @@ Service is running in container 789731dc0ca4 available at addresses:
             <div class="command-result">
 Running microservice example from dockyard: dockyard.armada.sh (alias: armada) locally...
 Service is running in container a9992ef1f772 available at addresses:
-  192.168.3.141:49157 (22/tcp)
   192.168.3.141:49158 (80/tcp)
             </div>
             <div class="command">$ curl 192.168.3.141:49158</div>
@@ -119,7 +116,6 @@ example  192.168.3.141:49158  a9992ef1f772  passing  -
             <div class="command-result">
 Running microservice example from dockyard: dockyard.armada.sh (alias: armada) locally...
 Service is running in container f7a09fb19009 available at addresses:
-  192.168.3.141:49159 (22/tcp)
   192.168.3.141:49160 (80/tcp)
             </div>
             <div class="command">$ armada list</div>
