@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 #
 # This script is meant for quick & easy install/upgrade via:
