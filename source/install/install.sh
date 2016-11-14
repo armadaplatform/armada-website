@@ -82,7 +82,7 @@ elif command_exists yum; then
 
 elif command_exists apt-get; then
     PACKAGE_FILENAME="armada_${VERSION}_amd64.deb"
-    INSTALL_COMMAND='dpkg -y -i'
+    INSTALL_COMMAND='dpkg -i'
     $sh_c "apt-get install -y python python-pip conntrack"
 else
     echo "Either your platform is not easily detectable or is not supported by this installer script."
