@@ -13,8 +13,6 @@ gem 'autoprefixer-rails', '6.0.3'
 # God knows what, doesn't compile without it
 gem 'kramdown', '1.8.0'
 
-gem 'kramdown', '1.8.0'
-
 # Templating Engines
 gem 'redcarpet'
 gem 'builder'
@@ -24,7 +22,7 @@ gem 'therubyracer'
 
 # Asset Pipeline Gems
 gem 'bourbon'
-gem 'neat'
+gem 'neat', '1.8.0'
 gem 'rails-assets-jquery', '2.1.3', source: 'http://rails-assets.org'
 
 
