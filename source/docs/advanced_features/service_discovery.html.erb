@@ -54,10 +54,10 @@ scores-frontend 192.168.3.91:32870  7f50c2d2f285    passing     ['env:dev']
 
     <h4>Configurable requirements.</h4>
     <p/>
-    In our <span class="inline-name">scores-frontend</span> code, in config path we can place <span class="inline-name">requirements.json</span> file containing configuration.
+    In our <span class="inline-name">scores-frontend</span> code, in config path we can place <span class="inline-name">service_discovery.json</span> file containing configuration.
     <div class="code" style="background-color: #f1f0f0;">
       <div class="host-info" style="background-color: #444444;">
-        requirements.json
+        service_discovery.json
       </div>
 
       <div class="command-result" style="color: #000000;">
@@ -70,7 +70,7 @@ scores-frontend 192.168.3.91:32870  7f50c2d2f285    passing     ['env:dev']
     This will have the same effect as previous example. In configuration file you can also specify many instances of required service with different "env" or "app_id" with config like this:
     <div class="code" style="background-color: #f1f0f0;">
     <div class="host-info" style="background-color: #444444;">
-      requirements.json
+      service_discovery.json
     </div>
     <div class="command-result" style="color: #000000;">
 {
@@ -95,9 +95,9 @@ scores-frontend 192.168.3.91:32870  7f50c2d2f285    passing     ['env:dev']
             In python package <span class="inline-name">armada</span> we offer easy way to get address of required service inside your container:
           <div class="code" style="background-color: #f1f0f0;">
             <div class="command-result" style="color: #000000;">
-from armada import requirements
+from armada import service_discovery
 
-address = requirements.get_address('scores-backend')
+address = service_discovery.get_address('scores-backend')
             </div>
           </div>
           This method will return address of specified microservice, you can also specify required 'env' and 'app_id'.
