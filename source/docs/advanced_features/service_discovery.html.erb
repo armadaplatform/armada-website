@@ -52,13 +52,55 @@ scores-frontend 192.168.3.91:32870  7f50c2d2f285    passing     ['env:dev']
     then maps it's address to <span class="inline-name">localhost:2000</span> inside the container.
     From now on, we can deploy <span class="inline-name">scores-backend</span> on any ship within armada cluster and always use <span class="inline-name">localhost:2000</span> for API requests.
 
-    <h4>Hint.</h4>
+    <h4>Configurable requirements.</h4>
+    <p/>
+    In our <span class="inline-name">scores-frontend</span> code, in config path we can place <span class="inline-name">service_discovery.json</span> file containing configuration.
+    <div class="code" style="background-color: #f1f0f0;">
+      <div class="host-info" style="background-color: #444444;">
+        service_discovery.json
+      </div>
+
+      <div class="command-result" style="color: #000000;">
+{
+    "scores-backend":{"port":"2000"}
+}
+      </div>
+    </div>
+    <p/>
+    This will have the same effect as previous example. In configuration file you can also specify many instances of required service with different "env" or "app_id" with config like this:
+    <div class="code" style="background-color: #f1f0f0;">
+    <div class="host-info" style="background-color: #444444;">
+      service_discovery.json
+    </div>
+    <div class="command-result" style="color: #000000;">
+{
+    "scores-backend":
+        [
+            {"port":"2000", "app_id": "app_1"},
+            {"port":"2001", "app_id": "app_2"}
+        ]
+}
+    </div>
+    </div>
+
+  <h4>Hint.</h4>
     <ul class="text">
         <li>
             If we run our frontend with <span class="inline-name">dev/legacy/john</span> env, <span class="inline-name">require_service.py</span> will first try to find service with
             matching <span class="inline-name">dev/legacy/john</span> env.
             Should it fail, it will try to find a service with <span class="inline-name">dev/legacy</span> env and eventually with <span class="inline-name">dev</span> env. Note that it
             will not match a service without specified env.
+        </li>
+        <li>
+            In python package <span class="inline-name">armada</span> we offer easy way to get address of required service inside your container:
+          <div class="code" style="background-color: #f1f0f0;">
+            <div class="command-result" style="color: #000000;">
+from armada import service_discovery
+
+address = service_discovery.get_address('scores-backend')
+            </div>
+          </div>
+          This method will return address of specified microservice, you can also specify required 'env' and 'app_id'.
         </li>
     </ul>
     <h4>Load balancing.</h4>
