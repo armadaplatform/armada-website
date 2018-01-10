@@ -21,13 +21,9 @@ gem 'less'
 gem 'therubyracer'
 
 # Asset Pipeline Gems
-gem 'bourbon'
+gem 'bourbon', '4.3.4'
 gem 'neat', '1.8.0'
 gem 'rails-assets-jquery', '2.1.3', source: 'http://rails-assets.org'
-
-
-# Windows Support
-gem 'wdm' if Gem.win_platform?
 
 # Debug
 # gem 'pry'
