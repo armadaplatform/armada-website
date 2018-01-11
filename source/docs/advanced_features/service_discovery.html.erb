@@ -43,12 +43,11 @@ scores-frontend 192.168.3.91:32870  7f50c2d2f285    passing     ['env:dev']
 
         <div class="command-result" style="color: #000000;">
 [<span style='color:#400000; font-weight:bold;'>program</span>:require_scores_backend]
-<span style='color:#400000; font-weight:bold;'>directory</span>=/opt/microservice/src/local_magellan
-<span style='color:#400000; font-weight:bold;'>command</span>=python require_service.py 2000 scores-backend
+<span style='color:#400000; font-weight:bold;'>command</span>=microservice require 2000 scores-backend
         </div>
     </div>
     <p/>
-    <span class="inline-name">require_service.py</span> finds an armada service with <span class="inline-name">scores-backend</span> name and 'dev' env,
+    <span class="inline-name">microservice require</span> finds an armada service with <span class="inline-name">scores-backend</span> name and 'dev' env,
     then maps it's address to <span class="inline-name">localhost:2000</span> inside the container.
     From now on, we can deploy <span class="inline-name">scores-backend</span> on any ship within armada cluster and always use <span class="inline-name">localhost:2000</span> for API requests.
 
@@ -86,7 +85,7 @@ scores-frontend 192.168.3.91:32870  7f50c2d2f285    passing     ['env:dev']
   <h4>Hint.</h4>
     <ul class="text">
         <li>
-            If we run our frontend with <span class="inline-name">dev/legacy/john</span> env, <span class="inline-name">require_service.py</span> will first try to find service with
+            If we run our frontend with <span class="inline-name">dev/legacy/john</span> env, <span class="inline-name">microservice require</span> will first try to find service with
             matching <span class="inline-name">dev/legacy/john</span> env.
             Should it fail, it will try to find a service with <span class="inline-name">dev/legacy</span> env and eventually with <span class="inline-name">dev</span> env. Note that it
             will not match a service without specified env.
@@ -106,7 +105,7 @@ address = service_discovery.get_address('scores-backend')
     <h4>Load balancing.</h4>
     <ul class="text">
     <li>
-        If there are two ore more <span class="inline-name">scores-backend</span> services with matching envs, require_service will automatically balance load
+        If there are two ore more <span class="inline-name">scores-backend</span> services with matching envs, <span class="inline-name">microservice require</span> will automatically balance load
         between them.
     </li>
     </ul>
