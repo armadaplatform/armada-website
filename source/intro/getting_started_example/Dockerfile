@@ -1,5 +1,4 @@
-FROM microservice_node
-MAINTAINER Cerebro <cerebro@ganymede.eu>
+FROM dockyard.armada.sh/microservice_node
 
 ADD src/package.json /opt/package.json
 RUN cd /opt && npm install --no-bin-links
