@@ -1,5 +1,5 @@
-FROM microservice
-MAINTAINER Peter Gibbons <peter@initech.com>
+FROM dockyard.armada.sh/microservice
+LABEL maintainer="Peter Gibbons <peter@initech.com>"
 
 RUN apt-get install -y python python-dev python-pip
 RUN pip install -U web.py
