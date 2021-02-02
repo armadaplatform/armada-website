@@ -79,11 +79,7 @@ if command_exists yum; then
 elif command_exists apt-get; then
     PACKAGE_FILENAME="armada_${VERSION}_amd64.deb"
     INSTALL_COMMAND='dpkg -i'
-    if [ $(echo $VERSION | awk -F . '{print $1*10^6 + $2*10^3 + $3}') -ge 2011000 ]; then
-        $sh_c "apt-get install -y python3 python3-pip conntrack jq netcat-openbsd"
-    else
-        $sh_c "apt-get install -y python python-pip conntrack jq netcat-openbsd"
-    fi
+    $sh_c "apt-get install -y python3 python3-pip conntrack jq netcat-openbsd"
 else
     echo "Either your platform is not easily detectable or is not supported by this installer script."
     exit 1
