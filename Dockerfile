@@ -3,7 +3,7 @@ FROM dockyard.armada.sh/microservice_php
 RUN apt-get update
 RUN apt-get install -y make build-essential g++ ruby-dev nodejs zlib1g-dev zip
 
-RUN gem install bundler
+RUN gem install bundler -v '1.17.3'
 RUN gem install eventmachine -v '1.0.7'
 
 ADD Gemfile /opt/armada-website/
