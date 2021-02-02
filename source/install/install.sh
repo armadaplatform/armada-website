@@ -75,7 +75,6 @@ set +e
 if command_exists yum; then
     PACKAGE_FILENAME="armada-${VERSION}-1.x86_64.rpm"
     INSTALL_COMMAND='yum -y --nogpgcheck localinstall'
-
 elif command_exists apt-get; then
     PACKAGE_FILENAME="armada_${VERSION}_amd64.deb"
     INSTALL_COMMAND='dpkg -i'
