@@ -72,11 +72,7 @@ download_file()
 VERSION=$(fetch_latest_tag)
 
 set +e
-if ( uname -a | grep --quiet 'amzn' ) ; then
-    PACKAGE_FILENAME="armada-amzn-${VERSION}-1.x86_64.rpm"
-    INSTALL_COMMAND='yum -y --nogpgcheck localinstall'
-
-elif command_exists yum; then
+if command_exists yum; then
     PACKAGE_FILENAME="armada-${VERSION}-1.x86_64.rpm"
     INSTALL_COMMAND='yum -y --nogpgcheck localinstall'
 
