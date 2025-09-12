@@ -4,6 +4,8 @@ source 'https://rubygems.org'
 gem 'middleman'
 gem 'middleman-autoprefixer'
 gem 'middleman-livereload'
+gem 'haml', '4.0.7'
+gem 'middleman-haml', '0.1.0'
 
 gem 'middleman-alias', '0.0.12'
 
